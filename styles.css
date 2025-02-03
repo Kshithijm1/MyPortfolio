@@ -1269,9 +1269,9 @@ section {
 
 }
 
-@media (min-width: 1194px) and (max-width: 1194px) {
+@media (min-width: 1194px) and (max-width: 1200px) {
     #nav-logo {
-        margin-right: 45vw;
+        margin-right: 40vw;
     }
 
     .nav-btn span {
