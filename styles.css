@@ -1257,7 +1257,7 @@ section {
     }
 }
 
-@media (max-height: 820px) and (max-width: 1440px) {
+@media (max-height: 820px) {
     #nav-logo {
         margin-right: 35vw;
     }
