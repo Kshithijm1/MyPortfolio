@@ -1245,3 +1245,14 @@ section {
     }
 
 }
+
+@media (max-width: 1440px) {
+    nav ul {
+        gap: 4rem;
+    }
+
+    .nav-btn span { 
+        left: 15%;
+        top: 15%;
+    }
+}
