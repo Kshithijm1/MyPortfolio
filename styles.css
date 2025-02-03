@@ -605,7 +605,6 @@ section {
 
     #nav-logo {
         width: 10rem;
-        margin-right: 50vw;
     }
 
     #nav-logo video,
@@ -1252,7 +1251,7 @@ section {
         gap: 4rem;
     }
 
-    .nav-btn span { 
+    .nav-btn span {
         left: 15%;
         top: 15%;
     }
@@ -1268,4 +1267,15 @@ section {
         top: 10%;
     }
 
+}
+
+@media (min-width: 1194px) and (max-width: 1194px) {
+    #nav-logo {
+        margin-right: 55vw;
+    }
+
+    .nav-btn span {
+        left: 10%;
+        top: 10%;
+    }
 }
