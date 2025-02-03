@@ -1278,4 +1278,12 @@ section {
         left: 10%;
         top: 10%;
     }
+
+    #portfolio-title {
+        left: 17%;
+    }
+
+    #portfolio-title2 {
+        left: 25%;
+    }
 }
