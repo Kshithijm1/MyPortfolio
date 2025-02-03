@@ -1256,3 +1256,15 @@ section {
         top: 15%;
     }
 }
+
+@media (max-height: 820px) and (max-width: 1440px) {
+    #nav-logo {
+        margin-right: 35vw;
+    }
+
+    .nav-btn span {
+        left: 10%;
+        top: 10%;
+    }
+
+}
