@@ -1,5 +1,16 @@
 @import url("https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap");
 
+/* Set the root font-size relative to the viewport height.
+   This makes all rem values scale with the screen’s height.
+   (Adjust the multiplier as needed.) */
+html {
+    font-size: calc(1vh * 1.6);
+}
+
+/* ==========================================================================
+   BASE STYLES
+   ========================================================================== */
+
 * {
     margin: 0;
     padding: 0;
@@ -52,21 +63,18 @@ body.loaded #main-content {
 
 /* Navbar styling */
 nav {
-    background-color: #00000000;
+    background-color: transparent;
     color: white;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    /* Change to space-between */
     padding: 1%;
     position: fixed;
     top: 1%;
     z-index: 1000000000 !important;
-    box-shadow: 0 0.13rem 0.31rem rgba(0, 0, 0, 0);
     height: auto;
-    min-height: 7.50rem;
-
+    min-height: 7.5rem;
 }
 
 nav ul {
@@ -74,13 +82,11 @@ nav ul {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    /* Change to flex-end */
     padding: 0;
     margin: 0;
     background-color: transparent;
     height: 100%;
     gap: 1.88rem;
-    /* Add gap to increase space between buttons */
 }
 
 nav ul li {
@@ -96,22 +102,20 @@ nav ul li {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 12.50rem;
-    /* Increased by 1.25 */
+    width: 12.5rem;
     height: 100%;
     position: relative;
     overflow: visible;
     margin-left: -0.63rem;
     flex-grow: 0;
+    margin-right: 42vw;
 }
 
 #nav-logo video,
 #nav-logo img {
     position: absolute;
     width: 8.13rem !important;
-    /* Increased by 1.25 */
     height: 8.13rem !important;
-    /* Increased by 1.25 */
     top: 50%;
     left: 45%;
     transform: translate(-34%, -50%);
@@ -126,22 +130,6 @@ nav ul li {
     z-index: 2000;
 }
 
-.navtext {
-    font-size: 1.50rem;
-    /* Adjust font size as needed */
-    font-weight: bold;
-    color: white;
-    margin-right: 3.13rem;
-    /* Space between the navtext and the rest of the buttons */
-    display: flex;
-    align-items: center;
-    background-color: transparent;
-    /* Match navbar styling */
-    margin-left: -2.50rem;
-    margin-right: 43.75rem;
-    /* Add margin to increase space between logo and buttons */
-    flex-grow: 0;
-}
 
 /* 3D Container */
 #threejs-container {
@@ -151,11 +139,8 @@ nav ul li {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    /* Prevent any overflow */
     padding: 0;
-    /* Ensure no padding inside container */
     margin: 0;
-    /* Remove any margin */
     z-index: 0;
 }
 
@@ -163,12 +148,10 @@ nav ul li {
 section {
     height: 100vh;
     margin: 0;
-    /* Ensure no margin is applied between sections */
 }
 
 #home {
     padding-top: 0;
-    /* Ensure no padding at the top of home section */
 }
 
 #about,
@@ -177,6 +160,7 @@ section {
     padding-top: 3.75rem;
 }
 
+/* Navigation Button Styles */
 .nav-btn {
     display: inline-flex;
     justify-content: center;
@@ -205,37 +189,34 @@ section {
     stroke-dashoffset: 150;
     transition: 1s ease-in-out;
     background: rgba(0, 0, 0, 0.555);
-    /* Very translucent black */
     border-radius: 0.94rem;
-    /* Curved corners */
 }
 
 .nav-btn span {
     position: relative;
     z-index: 1;
+    top: 4%;
+    right: 0;
+    left: 3%;
 }
 
 .nav-btn:hover {
     background: rgba(0, 0, 0, 0.2);
-    /* Slightly less translucent on hover */
 }
 
 .nav-btn:hover svg {
     stroke-dashoffset: -480;
 }
 
-/* Adjust ABOUT Button Spacing Dynamically */
 .nav-btn:first-child {
     margin-left: auto;
-    /* Allow dynamic adjustment via JavaScript */
 }
 
 .nav-btn:hover,
 .nav-btn:focus-visible {
     outline-color: var(--color);
-    outline-offset: .05em;
+    outline-offset: 0.05em;
 }
-
 
 /* First Text Styling */
 #about-me-heading {
@@ -246,9 +227,7 @@ section {
     margin-top: 20%;
     opacity: 1;
     position: absolute;
-    /* Use absolute positioning to keep the spot fixed */
     width: 100%;
-    /* Center align within the section */
     background-color: transparent;
 }
 
@@ -257,14 +236,12 @@ section {
     0% {
         opacity: 0;
         transform: translate(-1.88rem, 3.13rem);
-        /* Start below the position */
         filter: blur(0.5rem);
     }
 
     100% {
         opacity: 1;
         transform: translateY(0);
-        /* End in the original position */
     }
 }
 
@@ -273,7 +250,6 @@ section {
     display: inline-block;
     position: relative;
     animation: pixelate 1.2s forwards ease-in-out;
-    /* Pixelate animation */
 }
 
 @keyframes pixelate {
@@ -285,41 +261,31 @@ section {
 
     100% {
         opacity: 0;
-        transform: translate(-6.25rem, -12.50rem) rotate(30deg);
-        filter: blur(0.50rem);
+        transform: translate(-6.25rem, -12.5rem) rotate(30deg);
+        filter: blur(0.5rem);
     }
 }
-
 
 /* New Intro Text Styling */
 #intro-text-heading {
     font-size: 5rem;
-    /* Match the size of the other texts */
     font-weight: bold;
     color: white;
     text-align: center;
     opacity: 0;
-    /* Initially hidden */
     position: absolute;
-    /* Use absolute positioning */
     margin-top: 5%;
-    /* Place above the second text */
     width: 100%;
-    /* Center align within the section */
     background-color: transparent;
     z-index: 2;
 }
 
-/* Fly-In and Fade-In Animation for Intro Text */
 #intro-text-heading span {
     display: inline-block;
     position: relative;
     opacity: 0;
-    /* Start invisible */
     transform: translateY(50px);
-    /* Start below the position */
     animation: fadeInFly 0.5s forwards ease-in-out;
-    /* Fly-in and fade-in animation */
     background-color: transparent;
 }
 
@@ -338,61 +304,42 @@ section {
     align-items: center;
     justify-content: center;
     opacity: 0;
-    /* Initially hidden */
     transform: translateY(3.13rem);
-    /* Start slightly below */
     transition: opacity 1s ease, transform 1s ease;
 }
 
-/* Styling for 2D text in the #threejs-container */
+/* 2D Text in Three.js Container */
 #portfolio-title {
     position: absolute;
     top: 32%;
-    /* Center vertically */
     left: 25%;
-    /* Center horizontally */
     transform: translate(-50%, -50%);
-    /* Adjust for exact center alignment */
     font-size: 6rem;
-    /* Increased size */
     color: white;
     font-weight: bold;
     text-align: center;
     z-index: 1;
-    /* Ensure it appears above Three.js content */
     text-shadow: 0.13rem 0.13rem 0.31rem rgba(0, 0, 0, 0.7);
-    /* Optional shadow for better visibility */
     pointer-events: none;
-    /* Prevent interactions with the text */
     background-color: transparent;
 }
 
-/* Styling for 2D text in the #threejs-container */
 #portfolio-title2 {
     position: absolute;
     top: 43%;
-    /* Center vertically */
     left: 33.7%;
-    /* Center horizontally */
     transform: translate(-50%, -50%);
-    /* Adjust for exact center alignment */
     font-size: 6rem;
-    /* Increased size */
     color: white;
     font-weight: bold;
     text-align: center;
     z-index: 1;
-    /* Ensure it appears above Three.js content */
     text-shadow: 0.13rem 0.13rem 0.31rem rgba(0, 0, 0, 0.7);
-    /* Optional shadow for better visibility */
     pointer-events: none;
-    /* Prevent interactions with the text */
     background-color: transparent;
 }
 
-
-
-/* 3D Container */
+/* 3D Container for Resume */
 #threejs-container-resume {
     position: absolute;
     top: 0;
@@ -400,120 +347,83 @@ section {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    /* Prevent any overflow */
     padding: 0;
-    /* Ensure no padding inside container */
     margin: 0;
-    /* Remove any margin */
     z-index: 0;
 }
 
 #home-resume {
     padding-top: 0;
-    /* Ensure no padding at the top of home section */
 }
 
+/* Interest Box Containers */
 #interest-box-container {
     position: absolute;
     left: -10%;
-    /* Center the textboxes in the left half */
-    top: 63%;
-    /* Center vertically */
+    top: 63vh;
     transform: translate(0, -50%);
-    /* Adjust for vertical centering */
     display: flex;
     flex-direction: row;
-    /* Arrange the boxes side by side */
     width: 50%;
-    /* Take up half of the section width */
 }
 
 #interest-box-container2 {
     position: absolute;
     left: 25%;
-    /* Center the textboxes in the left half */
-    top: 63%;
-    /* Center vertically */
+    top: 63vh;
     transform: translate(0, -50%);
-    /* Adjust for vertical centering */
     display: flex;
     flex-direction: row;
-    /* Arrange the boxes side by side */
     width: 50%;
-    /* Take up half of the section width */
 }
 
 #interest-box-container3 {
     position: absolute;
-    right: 1.5%;
-    /* Center the textboxes in the left half */
-    top: 63%;
-    /* Center vertically */
+    right: 0%;
+    top: 63vh;
     transform: translate(0, -50%);
-    /* Adjust for vertical centering */
     display: flex;
     flex-direction: row;
-    /* Arrange the boxes side by side */
-    width: 29%;
-    /* Take up half of the section width */
+    width: 35%;
 }
 
-/* Shared styles for both interest boxes */
+/* Shared styles for interest boxes */
 .interest-box {
     color: white;
     border-radius: 0.94rem;
-    /* Rounded corners */
     padding: 0.63rem;
-    /* Add padding inside the box */
     font-size: 1.4rem;
-    /* Adjust font size */
     font-weight: bold;
     line-height: 2.7rem;
-    /* Line height for spacing between lines */
     text-align: center;
     flex: 1;
-    /* Allow both boxes to have equal width */
     max-width: 44%;
-    /* Set max width for each box */
     margin: 0 auto;
-    /* Center the boxes */
 }
 
-/* Headings within interest boxes */
 .interest-box h2 {
     display: inline-block;
-    /* Make the width fit the content */
     margin-bottom: 0.63rem;
-    /* Add space below the heading */
     color: rgb(255, 255, 255);
     border-radius: 0.63rem;
-    /* Rounded corners */
     padding: 0.63rem 0.94rem;
-    /* Add padding around the heading */
-    /* Border for the heading */
     text-align: center;
     border: 2px solid;
 }
 
-
-/* Add a container around Project1 and Project2 */
+/* Project Container & Projects */
 .project-container {
     display: flex;
     justify-content: flex-start;
-    /* Align the projects to the left */
     align-items: flex-start;
-    /* Align projects at the top */
     position: relative;
     padding: 0 3.13rem;
     gap: 0.63rem;
 }
 
-/* Project styles */
 #Project {
-    height: 37.50rem;
-    /* Fixed height */
-    width: 12.50rem;
-    /* Default width */
+    height: 37.5rem;
+    width: 12.5rem;
     background-size: cover;
     background-position: center;
     display: flex;
@@ -526,24 +436,18 @@ section {
     line-height: 2.7rem;
     text-align: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease, width 0.3s ease;
-    /* Smooth transition for width, scale, and shadow */
     position: relative;
     margin-right: 0.63rem;
     z-index: 10000000 !important;
-    /* Ensure it's above background elements */
 }
 
 #Project:last-child {
     margin-right: 0;
-    /* Remove margin from the last child to avoid extra space */
 }
 
-/* Hover effects */
 #Project:hover {
     box-shadow: 0 0 0.94rem 0.31rem rgb(30, 0, 112);
-    /* Purple box shadow on hover */
     transform: scale(1.02);
-    /* Slightly enlarge */
     transition: transform 0.3s ease, box-shadow 0.3s ease, width 0.3s ease;
 }
 
@@ -564,34 +468,24 @@ section {
     opacity: 1;
 }
 
-/* Adjust hover behavior for individual projects */
-
-/* First 3 projects expand to the left */
+/* Hover behavior for individual projects */
 .project-container #Project:nth-child(1):hover,
 .project-container #Project:nth-child(2):hover,
 .project-container #Project:nth-child(3):hover {
     transform: scale(1.02) translateX(-5px);
-    /* Move left while expanding */
     width: 15.63rem;
-    /* Increase width */
 }
 
-/* Middle project expands equally on both sides */
 .project-container #Project:nth-child(4):hover {
     transform: scale(1.02) translateX(0);
-    /* No shift */
     width: 15.63rem;
-    /* Increase width */
 }
 
-/* Last 3 projects expand to the right */
 .project-container #Project:nth-child(5):hover,
 .project-container #Project:nth-child(6):hover,
 .project-container #Project:nth-child(7):hover {
     width: 15.63rem;
-    /* Increase width */
 }
-
 
 .project-text {
     font-size: 10rem;
@@ -610,10 +504,12 @@ section {
     transform: translateY(-0.63rem);
 }
 
+/* Contact Section */
 #contact {
     background: linear-gradient(to top, rgba(101, 102, 102, 0.507), rgb(0, 0, 0));
 }
 
+/* Social Icons */
 .social-icons-wrapper {
     display: flex;
     justify-content: center;
@@ -650,7 +546,6 @@ section {
     stroke-linejoin: round;
     position: relative;
     z-index: 2;
-    z-index: inherit;
     background-color: transparent;
 }
 
@@ -663,13 +558,11 @@ section {
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
-    z-index: inherit;
 }
 
 .social-icon::before {
     inset: -0.5rem;
     filter: blur(0.5rem);
-    z-index: inherit;
 }
 
 .social-icon::after {
@@ -682,3 +575,673 @@ section {
     opacity: 0.15;
 }
 
+/* ==========================================================================
+   MEDIA QUERIES
+   ========================================================================== */
+
+/* For screens up to 1200px */
+@media (max-width: 1200px) {
+
+    /* Logo video */
+    #logo-video {
+        max-width: 60%;
+        max-height: 60%;
+        transform: translate(-50%, -50%);
+    }
+
+    /* Navbar & Logo */
+    nav {
+        padding: 0.8%;
+        min-height: 6.5rem;
+    }
+
+    nav ul {
+        gap: 1.5rem;
+    }
+
+    nav ul li {
+        margin: 0 0.8rem;
+    }
+
+    #nav-logo {
+        width: 10rem;
+    }
+
+    #nav-logo video,
+    #nav-logo img {
+        width: 6.5rem !important;
+        height: 6.5rem !important;
+    }
+
+    .navtext {
+        font-size: 1.3rem;
+        margin-left: -2rem;
+        margin-right: 30rem;
+    }
+
+    .nav-btn {
+        width: 10rem;
+        height: 3.5rem;
+        font-size: 1rem;
+        top: -0.8rem;
+    }
+
+    /* Section padding */
+    #home {
+        padding-top: 0;
+    }
+
+    #about,
+    #projects,
+    #contact {
+        padding-top: 3.75rem;
+    }
+
+    #home-resume {
+        padding-top: 0;
+    }
+
+    /* Headings & Intro text */
+    #about-me-heading {
+        font-size: 4rem;
+        margin-top: 15%;
+    }
+
+    #intro-text-heading {
+        font-size: 4rem;
+        margin-top: 4%;
+    }
+
+    #intro-text-box {
+        font-size: 1.8rem;
+    }
+
+    #portfolio-title,
+    #portfolio-title2 {
+        font-size: 5rem;
+    }
+
+    /* Interest Boxes */
+    .interest-box {
+        font-size: 1.2rem;
+        padding: 0.5rem;
+    }
+
+    .interest-box h2 {
+        font-size: 1.2rem;
+        padding: 0.5rem 0.8rem;
+    }
+
+    /* Projects */
+    .project-container {
+        padding: 0 2rem;
+        gap: 0.5rem;
+    }
+
+    #Project {
+        height: 30rem;
+        width: 10rem;
+        font-size: 1.2rem;
+        padding: 0.5rem;
+    }
+
+    .project-text {
+        font-size: 8rem;
+    }
+
+    /* Social Icons */
+    .social-icon {
+        padding: 0.8rem;
+    }
+
+    .social-icon svg {
+        width: 1.6rem;
+        height: 1.6rem;
+    }
+}
+
+/* For screens up to 768px */
+@media (max-width: 768px) {
+    #logo-video {
+        max-width: 70%;
+        max-height: 70%;
+    }
+
+    nav {
+        padding: 1%;
+        min-height: 5rem;
+    }
+
+    nav ul {
+        gap: 1rem;
+    }
+
+    nav ul li {
+        margin: 0 0.5rem;
+    }
+
+    #nav-logo {
+        width: 8rem;
+    }
+
+    #nav-logo video,
+    #nav-logo img {
+        width: 5rem !important;
+        height: 5rem !important;
+    }
+
+    .navtext {
+        font-size: 1rem;
+        margin-left: -1.5rem;
+        margin-right: 20rem;
+    }
+
+    .nav-btn {
+        width: 9rem;
+        height: 2.5rem;
+        font-size: 0.9rem;
+        top: -0.7rem;
+    }
+
+    /* Section padding */
+    #home {
+        padding-top: 0;
+    }
+
+    #about,
+    #projects,
+    #contact {
+        padding-top: 3.75rem;
+    }
+
+    #home-resume {
+        padding-top: 0;
+    }
+
+    /* Headings & Intro text */
+    #about-me-heading {
+        font-size: 3.5rem;
+        margin-top: 25%;
+    }
+
+    #intro-text-heading {
+        font-size: 3.5rem;
+        margin-top: 8%;
+    }
+
+    #intro-text-box {
+        font-size: 1.5rem;
+    }
+
+    #portfolio-title,
+    #portfolio-title2 {
+        font-size: 4rem;
+    }
+
+    /* Interest Boxes */
+    .interest-box {
+        font-size: 1rem;
+        padding: 0.4rem;
+    }
+
+    .interest-box h2 {
+        font-size: 1rem;
+        padding: 0.4rem 0.6rem;
+    }
+
+    /* Projects */
+    .project-container {
+        padding: 0 1rem;
+        gap: 0.5rem;
+    }
+
+    #Project {
+        height: 25rem;
+        width: 9rem;
+        font-size: 1rem;
+        padding: 0.4rem;
+    }
+
+    .project-text {
+        font-size: 7rem;
+    }
+
+    /* Social Icons */
+    .social-icon {
+        padding: 0.7rem;
+    }
+
+    .social-icon svg {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+}
+
+/* For screens up to 480px */
+@media (max-width: 480px) {
+    #logo-video {
+        max-width: 80%;
+        max-height: 80%;
+    }
+
+    nav {
+        padding: 1.5%;
+        min-height: 4rem;
+    }
+
+    nav ul {
+        gap: 0.8rem;
+    }
+
+    nav ul li {
+        margin: 0 0.3rem;
+    }
+
+    #nav-logo {
+        width: 6rem;
+    }
+
+    #nav-logo video,
+    #nav-logo img {
+        width: 4rem !important;
+        height: 4rem !important;
+    }
+
+    .navtext {
+        font-size: 0.8rem;
+        margin-left: -1rem;
+        margin-right: 10rem;
+    }
+
+    .nav-btn {
+        width: 7rem;
+        height: 2rem;
+        font-size: 0.75rem;
+        top: -0.5rem;
+    }
+
+    /* Section padding */
+    #home {
+        padding-top: 0;
+    }
+
+    #about,
+    #projects,
+    #contact {
+        padding-top: 3.75rem;
+    }
+
+    #home-resume {
+        padding-top: 0;
+    }
+
+    /* Headings & Intro text */
+    #about-me-heading {
+        font-size: 2.5rem;
+        margin-top: 30%;
+    }
+
+    #intro-text-heading {
+        font-size: 2.5rem;
+        margin-top: 10%;
+    }
+
+    #intro-text-box {
+        font-size: 1.2rem;
+    }
+
+    #portfolio-title,
+    #portfolio-title2 {
+        font-size: 3rem;
+    }
+
+    /* Interest Boxes */
+    .interest-box {
+        font-size: 0.9rem;
+        padding: 0.3rem;
+    }
+
+    .interest-box h2 {
+        font-size: 0.9rem;
+        padding: 0.3rem 0.5rem;
+    }
+
+    /* Projects */
+    .project-container {
+        padding: 0 0.5rem;
+        gap: 0.3rem;
+    }
+
+    #Project {
+        height: 20rem;
+        width: 7rem;
+        font-size: 0.8rem;
+        padding: 0.3rem;
+    }
+
+    .project-text {
+        font-size: 5rem;
+    }
+
+    /* Social Icons */
+    .social-icon {
+        padding: 0.5rem;
+    }
+
+    .social-icon svg {
+        width: 1.2rem;
+        height: 1.2rem;
+    }
+}
+
+/* ==========================================================================
+   iPad-Specific Media Query (768px to 1024px)
+   ========================================================================== */
+@media (min-device-width: 768px) and (max-device-width: 1024px) {
+
+    /* Adjustments specifically for iPad screens */
+    #logo-video {
+        max-width: 65%;
+        max-height: 65%;
+        transform: translate(-50%, -50%);
+    }
+
+
+
+    nav {
+        padding: 1%;
+        min-height: 6rem;
+    }
+
+    nav ul {
+        gap: 1rem;
+    }
+
+    nav ul li {
+        margin: 0 0.8rem;
+    }
+
+    #nav-logo {
+        width: 9rem;
+        margin-right: 1vh;
+    }
+
+    #nav-logo video,
+    #nav-logo img {
+        width: 6rem !important;
+        height: 6rem !important;
+    }
+
+    #about {
+        height: 85vh;
+    }
+
+    #projects {
+        height: 150%;
+    }
+
+    #portfolio-title {
+        top: 40%;
+        left: 35%;
+    }
+
+    #portfolio-title2 {
+        top: 49%;
+        left: 53%;
+    }
+
+    .navtext {
+        font-size: 1.2rem;
+        margin-left: -1.8rem;
+        margin-right: 25rem;
+    }
+
+    .nav-btn {
+        width: 9.5rem;
+        height: 3.3rem;
+        font-size: 1rem;
+        top: -0.15rem;
+    }
+
+    .nav-btn span {
+        left: -6%;
+        top: -4%;
+    }
+
+    #about-me-heading {
+        font-size: 4rem;
+        margin-top: 18%;
+    }
+
+    #intro-text-heading {
+        font-size: 4rem;
+        margin-top: 6%;
+    }
+
+    #intro-text-box {
+        font-size: 1.8rem;
+    }
+
+    #portfolio-title,
+    #portfolio-title2 {
+        font-size: 5rem;
+    }
+
+    .interest-box {
+        font-size: 1.2rem;
+        padding: 0.5rem;
+    }
+
+    .interest-box h2 {
+        font-size: 1.2rem;
+        padding: 0.5rem 0.8rem;
+    }
+
+    .project-container {
+        padding: 0 2rem;
+        gap: 0.5rem;
+    }
+
+    #Project {
+        height: 30rem;
+        width: 10rem;
+        font-size: 1.2rem;
+        padding: 0.5rem;
+    }
+
+    .project-text {
+        font-size: 8rem;
+    }
+
+    .social-icon {
+        padding: 0.8rem;
+    }
+
+    .social-icon svg {
+        width: 1.6rem;
+        height: 1.6rem;
+    }
+
+    /* Interest Box Containers */
+    #interest-box-container {
+        position: absolute;
+        left: -13%;
+        top: 55vh;
+        transform: translate(0, -50%);
+        display: flex;
+        flex-direction: row;
+        width: 60%;
+        background-color: transparent;
+    }
+
+    #interest-box-container2 {
+        position: absolute;
+        left: 20%;
+        top: 55vh;
+        transform: translate(0, -50%);
+        display: flex;
+        flex-direction: row;
+        width: 60%;
+        background-color: transparent;
+    }
+
+    #interest-box-container3 {
+        position: absolute;
+        right: -9%;
+        top: 55vh;
+        transform: translate(0, -50%);
+        display: flex;
+        flex-direction: row;
+        width: 50%;
+        background-color: transparent;
+    }
+
+    /* Shared styles for interest boxes */
+    .interest-box {
+        color: white;
+        border-radius: 0.94rem;
+        padding: 0.63rem;
+        font-size: 1rem;
+        font-weight: bold;
+        line-height: 2.7rem;
+        text-align: center;
+        flex: 1;
+        max-width: 44%;
+        margin: 0 auto;
+    }
+
+    .interest-box h2 {
+        display: inline-block;
+        margin-bottom: 0.63rem;
+        color: rgb(255, 255, 255);
+        border-radius: 0.63rem;
+        padding: 0.63rem 0.94rem;
+        text-align: center;
+        border: 2px solid;
+        font-size: 1rem;
+    }
+}
+
+@media (min-device-width: 1024px) and (max-device-width: 1366px) and (min-device-width: 1366px) and (max-device-height: 1024px) {
+
+    /* Adjustments specifically for iPad screens */
+    #logo-video {
+        max-width: 65%;
+        max-height: 65%;
+        transform: translate(-50%, -50%);
+    }
+
+    nav {
+        padding: 1%;
+        min-height: 6rem;
+    }
+
+    nav ul {
+        gap: 1.2rem;
+    }
+
+    nav ul li {
+        margin: 0 0.8rem;
+    }
+
+    #nav-logo {
+        width: 9rem;
+    }
+
+    .nav-btn span {
+        left: 8%;
+    }
+
+    #nav-logo video,
+    #nav-logo img {
+        width: 6rem !important;
+        height: 6rem !important;
+    }
+
+    .navtext {
+        font-size: 1.2rem;
+        margin-left: -1.8rem;
+        margin-right: 25rem;
+    }
+
+    .nav-btn {
+        width: 9.5rem;
+        height: 3.3rem;
+        font-size: 1rem;
+        top: -0.8rem;
+    }
+
+    #about-me-heading {
+        font-size: 4rem;
+        margin-top: 28%;
+    }
+
+    #intro-text-heading {
+        font-size: 4rem;
+        margin-top: 6%;
+    }
+
+    #intro-text-box {
+        font-size: 1.8rem;
+    }
+
+    #portfolio-title,
+    #portfolio-title2 {
+        font-size: 5rem;
+    }
+
+    .interest-box {
+        font-size: 1.2rem;
+        padding: 0.5rem;
+    }
+
+    .interest-box h2 {
+        font-size: 1.2rem;
+        padding: 0.5rem 0.8rem;
+    }
+
+    .project-container {
+        padding: 0 2rem;
+        gap: 0.5rem;
+    }
+
+    #Project {
+        height: 30rem;
+        width: 10rem;
+        font-size: 1.2rem;
+        padding: 0.5rem;
+    }
+
+    .project-text {
+        font-size: 8rem;
+    }
+
+    .social-icon {
+        padding: 0.8rem;
+    }
+
+    .social-icon svg {
+        width: 1.6rem;
+        height: 1.6rem;
+    }
+
+    /* Hover behavior for individual projects */
+    .project-container #Project:nth-child(1):hover,
+    .project-container #Project:nth-child(2):hover,
+    .project-container #Project:nth-child(3):hover {
+        transform: scale(1.02) translateX(-5px);
+        width: 11rem;
+    }
+
+    .project-container #Project:nth-child(4):hover {
+        transform: scale(1.02) translateX(0);
+        width: 11rem;
+    }
+
+    .project-container #Project:nth-child(5):hover,
+    .project-container #Project:nth-child(6):hover,
+    .project-container #Project:nth-child(7):hover {
+        width: 11rem;
+    }
+
+}

@@ -7,6 +7,7 @@
   <title>Kshithij's Portfolio</title>
   <link rel="stylesheet" href="styles.css"> <!-- Link to CSS file -->
   <link rel="icon" href="assets/images/logo.png" type="image/x-icon"> <!-- Add this line -->
+  
 
   <!-- Include Three.js core library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -46,7 +47,7 @@
     <!-- Horizontal Navbar -->
     <nav>
       <ul>
-        <li id="nav-logo" style="margin-right: 750px;"><a onclick="scrollToSectionbuttons('home', event)"></a>
+        <li id="nav-logo"><a onclick="scrollToSectionbuttons('home', event)"></a>
           <img id="logo-image" src="assets/images/logo.png" alt="Logo" style="opacity: 0; background-color: transparent;">
           </a>
         </li>
@@ -107,8 +108,7 @@
     </section>
 
 
-    <section id="projects"
-      style="height: 100vh; padding-top: 60px; display: flex; flex-direction: column; align-items: center;">
+    <section id="projects" style="padding-top: 60px; display: flex; flex-direction: column; align-items: center;">
       <h1 class="project-text" style="font-size: 4rem; margin-bottom: 20px;">Projects</h1>
       <div class="project-container" style="display: flex; flex-wrap: wrap; justify-content: center;">
         <div id="Project" class="project" data-text="A.L.F.R.E.D AI Assistant"

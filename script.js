@@ -93,7 +93,21 @@ window.addEventListener('load', function () {
         loader.load('assets/models/iphone16.glb', function (gltf) {
             iphone = gltf.scene;
             iphone.scale.set(0.5, 0.5, 0.48);
-            iphone.position.set(3.9, 0.3, 1.12);
+            function updateIphonePosition() {
+                if (window.innerWidth <= 1024) {
+                    iphone.visible = false; // Hide the iPhone model for smaller screens
+                } else if (window.innerWidth < 1368) {
+                    iphone.visible = true; // Ensure the iPhone model is visible
+                    iphone.position.set(3.2, 0.3, 1.12);
+                } else {
+                    iphone.visible = true; // Ensure the iPhone model is visible
+                    iphone.position.set(3.9, 0.3, 1.12);
+                }
+            }
+
+            updateIphonePosition(); // Set initial position
+            window.addEventListener('resize', updateIphonePosition); // Update position on resize
+
             iphone.rotation.x = 0.4;
 
             scene.add(iphone);
@@ -104,7 +118,20 @@ window.addEventListener('load', function () {
         loader.load('assets/models/githublogocircle.glb', function (gltf) {
             githublogo = gltf.scene;
             githublogo.scale.set(0.0035, 0.0035, 0.0035);
-            githublogo.position.set(3.1, 1.05, 1);
+
+            function updateGithubLogoPosition() {
+                if (window.innerWidth <= 1024) {
+                    githublogo.visible = false; // Hide the logo for smaller screens
+                } else if (window.innerWidth < 1368) {
+                    githublogo.position.set(2.5, 1, 1);
+                } else { // Desktop view
+                    githublogo.position.set(3.1, 1.05, 1);
+                }
+            }
+
+            updateGithubLogoPosition(); // Set initial position
+            window.addEventListener('resize', updateGithubLogoPosition); // Update position on resize
+
             githublogo.rotation.x = 1.6;
             githublogo.rotation.y = -0.1;
 
@@ -206,7 +233,21 @@ window.addEventListener('load', function () {
         loader.load('assets/models/scene.gltf', function (gltf) {
             robot = gltf.scene;
             robot.scale.set(0.5, 0.5, 0.5);
-            robot.position.set(1, 0.129, 3);
+
+            function updateRobotPosition() {
+                if (window.innerWidth <= 1024) {
+                    robot.visible = false; // Hide the logo for smaller screens
+                } else if (window.innerWidth < 1368) {
+                    robot.position.set(0.7, 0.129, 3);
+                    robot.rotation.y = -1;
+                } else { // Desktop view
+                    robot.position.set(1, 0.129, 3);
+                }
+            }
+
+            updateRobotPosition(); // Set initial position
+            window.addEventListener('resize', updateRobotPosition); // Update position on resize
+
             robot.rotation.y = -0.35;
 
             scene.add(robot);
@@ -262,8 +303,21 @@ window.addEventListener('load', function () {
             scene
         );
 
+        function updateCubePosition() {
+            if (window.innerWidth <= 1024) {
+                cube.visible = false; // Hide the logo for smaller screens
+            } else if (window.innerWidth < 1368) {
+                cube.position.x = 2; // Move to the left for smaller screens
+            } else {
+                cube.position.x = 3; // Original position for larger screens
+            }
+        }
+
+        updateCubePosition(); // Set initial position
+        window.addEventListener('resize', updateCubePosition); // Update position on resize
+
         // Prism
-        createMesh(
+        const prism = createMesh(
             new THREE.BoxGeometry(1.245, 2.245, 1.245),
             commonMaterial,
             { x: 5, y: -0.3, z: -1.5 },
@@ -271,14 +325,40 @@ window.addEventListener('load', function () {
             scene
         );
 
+        function updatePrismPosition() {
+            if (window.innerWidth <= 1024) {
+                prism.visible = false; // Hide the logo for smaller screens
+            } else if (window.innerWidth < 1368) {
+                prism.position.x = 4; // Move to the left for smaller screens
+            } else {
+                prism.position.x = 5; // Original position for larger screens
+            }
+        }
+
+        updatePrismPosition(); // Set initial position
+        window.addEventListener('resize', updatePrismPosition); // Update position
+
         // Cube2
-        createMesh(
+        const cube2 = createMesh(
             new THREE.BoxGeometry(1, 1, 1),
             commonMaterial,
             { x: 4, y: -0.74, z: 0.9 },
             objectsLayer,
             scene
         );
+
+        function updateCube2Position() {
+            if (window.innerWidth <= 1024) {
+                cube2.visible = false; // Hide the logo for smaller screens
+            } else if (window.innerWidth < 1368) {
+                cube2.position.x = 3.25; // Move to the left for smaller screens
+            } else {
+                cube2.position.x = 4; // Original position for larger screens
+            }
+        }
+
+        updateCube2Position(); // Set initial position
+        window.addEventListener('resize', updateCube2Position); // Update position
 
         // Preload water texture
         const waterNormals = new THREE.TextureLoader().load(
@@ -456,6 +536,18 @@ window.addEventListener('DOMContentLoaded', () => {
                             aboutHeading.appendChild(span);
                         });
 
+                        // Adjust the position of the "About Me" text based on screen size
+                        function updateAboutHeadingPosition() {
+                            if (window.innerWidth < 1368) {
+                                aboutHeading.style.top = '6%'; // Smaller top margin for smaller screens
+                            } else {
+                                aboutHeading.style.top = '6%'; // Original top margin for larger screens
+                            }
+                        }
+
+                        updateAboutHeadingPosition(); // Set initial position
+                        window.addEventListener('resize', updateAboutHeadingPosition); // Update position on resize
+
                         setTimeout(() => {
                             aboutHeading.style.opacity = 0;
                             introHeading.style.opacity = 1;
@@ -470,6 +562,16 @@ window.addEventListener('DOMContentLoaded', () => {
                                 const span = document.createElement('span');
                                 span.textContent = letter === ' ' ? '\u00A0' : letter;
                                 span.style.animationDelay = `${index * 0.03}s`;
+
+                                // Change the font size based on screen width
+                                if (window.innerWidth <= 1024) {
+                                    span.style.fontSize = '2.7rem'; // Smaller font size for smaller screens
+                                } else if (window.innerWidth < 1368) {
+                                    span.style.fontSize = '4rem'; // Medium font size for medium screens
+                                } else {
+                                    span.style.fontSize = '5rem'; // Original font size for larger screens
+                                }
+
                                 introHeading.appendChild(span);
                             });
 
@@ -491,7 +593,13 @@ window.addEventListener('DOMContentLoaded', () => {
                                 additionalText.style.transition = 'opacity 1s ease';
                                 additionalText.style.whiteSpace = 'pre-line';
                                 additionalText.style.fontWeight = '350';
-                                additionalText.style.marginTop = '13.13rem';
+                                if (window.innerWidth <= 1024) {
+                                    additionalText.style.marginTop = '9rem'; // Smaller margin for smaller screens
+                                } else if (window.innerWidth < 1368) {
+                                    additionalText.style.marginTop = '13.13rem'; // Medium margin for medium screens
+                                } else {
+                                    additionalText.style.marginTop = '15rem'; // Original margin for larger screens
+                                }
                                 aboutSection.appendChild(additionalText);
 
                                 setTimeout(() => {
