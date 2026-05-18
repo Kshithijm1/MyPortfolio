@@ -1,0 +1,177 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Deep space substrate ───────────────────────────────── */
+  --color-void: #00000a;
+  --color-void-warm: #05050f;
+  --color-void-cool: #000005;
+  --color-obsidian-base: #00000a;
+  --color-obsidian-surface: #07070f;
+  --color-obsidian-elevated: #0c0e16;
+
+  /* ── Frontend planet — cool spectrum ────────────────────── */
+  --color-fe-core: #4a8cff;
+  --color-fe-glow: #00d4ff;
+  --color-fe-edge: #7c5fff;
+  --color-fe-deep: #0a1f3a;
+  --color-fe-text: #b8d8ff;
+
+  /* ── Backend planet — warm spectrum ─────────────────────── */
+  --color-be-core: #ff8a3c;
+  --color-be-glow: #ffb84d;
+  --color-be-edge: #c44724;
+  --color-be-deep: #2a0f08;
+  --color-be-text: #ffd8a8;
+
+  /* ── Instrument chrome ──────────────────────────────────── */
+  --color-chrome-glass: rgba(8, 12, 22, 0.42);
+  --color-chrome-glass-strong: rgba(8, 12, 22, 0.62);
+  --color-chrome-edge: rgba(255, 255, 255, 0.08);
+  --color-chrome-edge-bright: rgba(255, 255, 255, 0.18);
+  --color-readout-primary: #f4f7fc;
+  --color-readout-secondary: #8a96a8;
+  --color-readout-faint: #4a5365;
+
+  /* Legacy aliases retained so existing utility classes keep working */
+  --color-electric-violet: #7c5fff;
+  --color-cyan-glow: #00d4ff;
+
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-mono: var(--font-instrument);
+  --font-sans: var(--font-body);
+}
+
+/* ── Glass panel — frosted instrument plate ─────────────────── */
+@utility glass-panel {
+  position: relative;
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.045) 0%,
+      rgba(255, 255, 255, 0.015) 100%
+    ),
+    rgba(8, 12, 22, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.06),
+    0 30px 60px -30px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.02);
+}
+
+/* Subtle luminous accent border for tooltips/labels */
+@utility glass-readout {
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  background: rgba(6, 8, 14, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
+    0 12px 30px -12px rgba(0, 0, 0, 0.8);
+}
+
+/* Editorial heading utility */
+@utility text-display {
+  font-family: var(--font-display), "Times New Roman", serif;
+  font-feature-settings: "ss01", "ss02", "ss03";
+  letter-spacing: -0.02em;
+}
+
+@utility text-instrument {
+  font-family: var(--font-instrument), ui-monospace, monospace;
+  font-feature-settings: "tnum", "ss01";
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Embedded text — glow as if light leaks around the letters */
+@utility text-embed-glow {
+  text-shadow:
+    0 0 14px rgba(120, 180, 255, 0.18),
+    0 0 32px rgba(0, 0, 0, 0.5),
+    0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+@utility text-embed-glow-warm {
+  text-shadow:
+    0 0 14px rgba(255, 180, 110, 0.18),
+    0 0 32px rgba(0, 0, 0, 0.5),
+    0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* ── Base layer ─────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
+  background-color: var(--color-void);
+}
+
+body {
+  background-color: var(--color-void);
+  color: var(--color-readout-primary);
+  font-family: var(--font-body), "Helvetica Neue", system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv11";
+  font-weight: 300;
+  letter-spacing: 0.005em;
+  overflow-x: hidden;
+  cursor: auto;
+}
+
+
+/* ── Editorial heading defaults ─────────────────────────────── */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display), "Times New Roman", serif;
+  font-feature-settings: "ss01", "ss02", "ss03";
+  letter-spacing: -0.025em;
+  font-weight: 500;
+  font-variation-settings: "opsz" 144, "SOFT" 30;
+}
+
+/* ── Selection ──────────────────────────────────────────────── */
+::selection {
+  background-color: rgba(0, 212, 255, 0.22);
+  color: #ffffff;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 212, 255, 0.18),
+    rgba(124, 95, 255, 0.18)
+  );
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 212, 255, 0.35),
+    rgba(124, 95, 255, 0.35)
+  );
+  background-clip: padding-box;
+}
+
+/* ── Aurora animation used by inline shimmer effects ────────── */
+@keyframes aurora-drift {
+  0%, 100% { opacity: 0; transform: translateY(0px); }
+  50%      { opacity: 0.5; transform: translateY(-2px); }
+}
+
+@keyframes pulse-faint {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.02); }
+}
