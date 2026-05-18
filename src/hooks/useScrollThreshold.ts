@@ -6,12 +6,30 @@ export function useScrollThreshold(threshold = 100) {
     const [scrolled, setScrolled] = useState(false)
 
     useEffect(() => {
-        const handleScroll = () => {
-            setScrolled(window.scrollY > threshold)
+        let frame = 0
+        let last = scrolled
+
+        const evaluate = () => {
+            frame = 0
+            const next = window.scrollY > threshold
+            if (next !== last) {
+                last = next
+                setScrolled(next)
+            }
         }
-        window.addEventListener('scroll', handleScroll)
-        handleScroll() // Check initial
-        return () => window.removeEventListener('scroll', handleScroll)
+
+        const handleScroll = () => {
+            if (frame === 0) frame = requestAnimationFrame(evaluate)
+        }
+
+        window.addEventListener('scroll', handleScroll, { passive: true })
+        evaluate()
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll)
+            if (frame !== 0) cancelAnimationFrame(frame)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [threshold])
 
     return scrolled
