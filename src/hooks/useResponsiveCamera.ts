@@ -14,25 +14,16 @@ export const useResponsiveCamera = () => {
     if (!(camera instanceof PerspectiveCamera)) return
 
     const isMobile = size.width < 768
-    
-    // Base configuration
-    let targetZ = 15
-    let targetFov = 45
 
     if (isMobile) {
-        // Mobile: Move further back to fit the orbital system in portrait
-        targetZ = 20 
-        targetFov = 50
+      camera.position.set(0, 2, 22)
+      camera.fov = 50
     } else {
-        // Desktop: Standard distance
-        targetZ = 12
-        targetFov = 40
+      camera.position.set(0, 2, 16)
+      camera.fov = 40
     }
 
-    // Smooth adjustment or direct set? 
-    // For now, direct set to ensure initial load is correct.
-    camera.position.z = targetZ
-    camera.fov = targetFov
+    camera.lookAt(0, 0, 0)
     camera.updateProjectionMatrix()
 
   }, [size.width, size.height, camera])
