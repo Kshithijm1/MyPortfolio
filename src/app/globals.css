@@ -107,6 +107,10 @@ html {
   background-color: var(--color-void);
 }
 
+.canvas-container canvas {
+  pointer-events: none;
+}
+
 body {
   background-color: var(--color-void);
   color: var(--color-readout-primary);

@@ -1,8 +1,8 @@
 'use client'
 
-import { useRef, useMemo, useState } from 'react'
+import { useRef, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { Html, OrbitControls } from '@react-three/drei'
+import { Html } from '@react-three/drei'
 import * as THREE from 'three'
 
 // ─── Data ─────────────────────────────────────────────────────────────────
@@ -603,7 +603,6 @@ function Moon({
     const groupRef = useRef<THREE.Group>(null)
     const meshRef = useRef<THREE.Mesh>(null)
     const matRef = useRef<THREE.ShaderMaterial>(null)
-    const [hovered, setHovered] = useState(false)
     const angleRef = useRef(timeOffset)
     const segments = 18
     const _viewMat3 = useRef(new THREE.Matrix3())
@@ -636,23 +635,12 @@ function Moon({
         if (matRef.current) {
             matRef.current.uniforms.uLightDirView.value.copy(_lightView.current)
         }
-
-        // Hover pulse
-        const targetScale = hovered ? 1.18 : 1.0
-        meshRef.current.scale.lerp(
-            new THREE.Vector3(targetScale, targetScale, targetScale),
-            Math.min(1, delta * 8),
-        )
     })
 
     return (
         <group>
             <group ref={groupRef}>
-                <mesh
-                    ref={meshRef}
-                    onPointerOver={(e) => { e.stopPropagation(); setHovered(true) }}
-                    onPointerOut={() => setHovered(false)}
-                >
+                <mesh ref={meshRef}>
                     <sphereGeometry args={[data.size, segments, segments]} />
                     <shaderMaterial
                         ref={matRef}
@@ -670,14 +658,14 @@ function Moon({
                     zIndexRange={[100, 0]}
                     style={{ pointerEvents: 'none' }}
                 >
-                    <MoonLabel name={data.name} accent={`#${parentAtmo.getHexString()}`} hovered={hovered} />
+                    <MoonLabel name={data.name} accent={`#${parentAtmo.getHexString()}`} />
                 </Html>
             </group>
         </group>
     )
 }
 
-function MoonLabel({ name, accent, hovered }: { name: string; accent: string; hovered: boolean }) {
+function MoonLabel({ name, accent }: { name: string; accent: string }) {
     return (
         <div
             style={{
@@ -686,16 +674,14 @@ function MoonLabel({ name, accent, hovered }: { name: string; accent: string; ho
                 fontWeight: 500,
                 letterSpacing: '0.14em',
                 textTransform: 'uppercase',
-                color: hovered ? '#ffffff' : 'rgba(220, 230, 255, 0.75)',
+                color: 'rgba(220, 230, 255, 0.75)',
                 padding: '4px 10px',
                 borderRadius: '999px',
-                background: hovered ? 'rgba(6, 8, 14, 0.75)' : 'rgba(6, 8, 14, 0.45)',
+                background: 'rgba(6, 8, 14, 0.45)',
                 backdropFilter: 'blur(10px)',
                 WebkitBackdropFilter: 'blur(10px)',
-                border: `1px solid ${accent}${hovered ? '88' : '40'}`,
-                boxShadow: hovered ? `0 0 12px ${accent}44, 0 4px 16px rgba(0,0,0,0.6)` : 'none',
+                border: `1px solid ${accent}40`,
                 whiteSpace: 'nowrap',
-                transition: 'all 200ms ease',
             }}
         >
             {name}
@@ -708,9 +694,7 @@ function Planet({ data, timeOffset = 0 }: { data: TechNode; timeOffset?: number 
     const groupRef = useRef<THREE.Group>(null)
     const planetRef = useRef<THREE.Mesh>(null)
     const planetMatRef = useRef<THREE.ShaderMaterial>(null)
-    const atmoRef = useRef<THREE.Mesh>(null)
     const atmoMatRef = useRef<THREE.ShaderMaterial>(null)
-    const [hovered, setHovered] = useState(false)
     const angleRef = useRef(timeOffset)
 
     const identity = PLANET_IDENTITY[data.id] ?? PLANET_IDENTITY.frontend
@@ -762,21 +746,13 @@ function Planet({ data, timeOffset = 0 }: { data: TechNode; timeOffset?: number 
         if (planetMatRef.current) planetMatRef.current.uniforms.uLightDirView.value.copy(_lightView.current)
         if (atmoMatRef.current)   atmoMatRef.current.uniforms.uLightDirView.value.copy(_lightView.current)
 
-        // Atmosphere shell: 1.06× base, slight expand on hover
-        if (atmoRef.current) {
-            const target = hovered ? 1.09 : 1.06
-            atmoRef.current.scale.lerp(
-                new THREE.Vector3(target, target, target),
-                Math.min(1, delta * 6),
-            )
-        }
     })
 
     return (
         <group>
             <group ref={groupRef}>
                 {/* Atmosphere shell — airglow limb haze, 1.06× planet size */}
-                <mesh ref={atmoRef} scale={[1.06, 1.06, 1.06]}>
+                <mesh scale={[1.06, 1.06, 1.06]}>
                     <sphereGeometry args={[data.size, segments, segments]} />
                     <shaderMaterial
                         ref={atmoMatRef}
@@ -791,11 +767,7 @@ function Planet({ data, timeOffset = 0 }: { data: TechNode; timeOffset?: number 
                 </mesh>
 
                 {/* Planet surface */}
-                <mesh
-                    ref={planetRef}
-                    onPointerOver={(e) => { e.stopPropagation(); setHovered(true) }}
-                    onPointerOut={() => setHovered(false)}
-                >
+                <mesh ref={planetRef}>
                     <sphereGeometry args={[data.size, segments, segments]} />
                     <shaderMaterial
                         ref={planetMatRef}
@@ -975,18 +947,15 @@ function CentralStar() {
 
 // ─── Public component ───────────────────────────────────────────────────
 export function OrbitalSystem() {
-    return (
-        <group>
-            <OrbitControls
-                enablePan={false}
-                enableZoom={false}
-                minDistance={5}
-                maxDistance={40}
-                autoRotate
-                autoRotateSpeed={0.5}
-                makeDefault
-            />
+    const groupRef = useRef<THREE.Group>(null)
 
+    // Equivalent to OrbitControls autoRotateSpeed=0.5: 2π/60*0.5 rad/s
+    useFrame((_, delta) => {
+        if (groupRef.current) groupRef.current.rotation.y += delta * Math.PI / 60
+    })
+
+    return (
+        <group ref={groupRef}>
             <CentralStar />
 
             {PLANETS_ORBITING_SUN.map((planet, i) => (

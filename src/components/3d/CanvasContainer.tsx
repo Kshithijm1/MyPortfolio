@@ -15,7 +15,7 @@ function CameraRig() {
 
 export default function CanvasContainer() {
     return (
-        <div className="fixed inset-0 z-0 overflow-hidden bg-[#00000a]">
+        <div className="canvas-container fixed inset-0 z-0 overflow-hidden bg-[#00000a]">
             {/* 2D photoreal backdrop — stars, Milky Way, zodiacal haze, motes, cosmic rays */}
             <SpaceBackground />
 

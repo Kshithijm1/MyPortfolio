@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import { useEffect, useState, useRef } from 'react'
+import { createPortal } from 'react-dom'
 
 interface ProjectModalProps {
     project: any
@@ -12,6 +13,9 @@ const TABS = ['Overview', 'Specs', 'Challenges']
 
 export default function ProjectModal({ project, onClose }: ProjectModalProps) {
     const [activeTab, setActiveTab] = useState('Overview')
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => { setMounted(true) }, [])
 
     // Tilt Logic for Visual Side
     const ref = useRef<HTMLDivElement>(null)
@@ -49,10 +53,23 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
         return () => window.removeEventListener('keydown', handleKeyDown)
     }, [onClose])
 
-    if (!project) return null
+    // Lock body scroll while modal is open
+    useEffect(() => {
+        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
+        const prevOverflow = document.body.style.overflow
+        const prevPadding = document.body.style.paddingRight
+        document.body.style.overflow = 'hidden'
+        document.body.style.paddingRight = `${scrollbarWidth}px`
+        return () => {
+            document.body.style.overflow = prevOverflow
+            document.body.style.paddingRight = prevPadding
+        }
+    }, [])
 
-    return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 pointer-events-auto">
+    if (!project || !mounted) return null
+
+    return createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-10 pointer-events-auto">
             {/* Backdrop */}
             <motion.div
                 initial={{ opacity: 0 }}
@@ -229,6 +246,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                     </div>
                 </div>
             </motion.div>
-        </div>
+        </div>,
+        document.body
     )
 }
