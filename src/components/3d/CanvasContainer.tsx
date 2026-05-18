@@ -22,7 +22,7 @@ export default function CanvasContainer() {
             {/* WebGL scene — planets, moons, atmospheres, auroras, orbital trails */}
             <div className="absolute inset-0" style={{ zIndex: 2 }}>
                 <Canvas
-                    camera={{ position: [0, 2, 16], fov: 40 }}
+                    camera={{ position: [0, 5, 15], fov: 42 }}
                     dpr={[1, 1.5]}
                     gl={{
                         antialias: true,

@@ -16,11 +16,11 @@ export const useResponsiveCamera = () => {
     const isMobile = size.width < 768
 
     if (isMobile) {
-      camera.position.set(0, 2, 22)
+      camera.position.set(0, 5, 22)
       camera.fov = 50
     } else {
-      camera.position.set(0, 2, 16)
-      camera.fov = 40
+      camera.position.set(0, 5, 15)
+      camera.fov = 42
     }
 
     camera.lookAt(0, 0, 0)
