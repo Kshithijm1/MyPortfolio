@@ -48,6 +48,7 @@ export default function LoadingScreen() {
     }, [])
 
     useEffect(() => {
+        if (!visible) return
         const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
         document.body.style.overflow = 'hidden'
         document.body.style.paddingRight = `${scrollbarWidth}px`
@@ -55,7 +56,7 @@ export default function LoadingScreen() {
             document.body.style.overflow = ''
             document.body.style.paddingRight = ''
         }
-    }, [])
+    }, [visible])
 
     if (!visible) return null
 
