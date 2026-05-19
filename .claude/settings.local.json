@@ -56,7 +56,9 @@
       "Bash(findstr /I \"node\")",
       "PowerShell(Get-Process *)",
       "PowerShell(Get-Command *)",
-      "PowerShell($bytes = [System.IO.File]::ReadAllBytes\\(\"C:\\\\Users\\\\kshit\\\\Desktop\\\\Portfolio\\\\public\\\\logo.mp4\"\\); $txt = -join \\($bytes | ForEach-Object { if \\($_ -ge 32 -and $_ -le 126\\) { [char]$_ } else { '.' } }\\); foreach \\($code in 'ftyp','isom','mp42','avc1','hvc1','hev1','av01','mp4v','vp09','avcC','hvcC','mvhd'\\) { $idx = $txt.IndexOf\\($code\\); Write-Host \\(\"{0,-6} : {1}\" -f $code, $\\(if \\($idx -ge 0\\) { \"found @ $idx\" } else { \"absent\" }\\)\\) }; Write-Host \"--- first 64 printable ---\"; Write-Host $txt.Substring\\(0,64\\))"
+      "PowerShell($bytes = [System.IO.File]::ReadAllBytes\\(\"C:\\\\Users\\\\kshit\\\\Desktop\\\\Portfolio\\\\public\\\\logo.mp4\"\\); $txt = -join \\($bytes | ForEach-Object { if \\($_ -ge 32 -and $_ -le 126\\) { [char]$_ } else { '.' } }\\); foreach \\($code in 'ftyp','isom','mp42','avc1','hvc1','hev1','av01','mp4v','vp09','avcC','hvcC','mvhd'\\) { $idx = $txt.IndexOf\\($code\\); Write-Host \\(\"{0,-6} : {1}\" -f $code, $\\(if \\($idx -ge 0\\) { \"found @ $idx\" } else { \"absent\" }\\)\\) }; Write-Host \"--- first 64 printable ---\"; Write-Host $txt.Substring\\(0,64\\))",
+      "WebFetch(domain:kshithijm1.github.io)",
+      "Bash(curl -s -L \"https://kshithijm1.github.io/MyPortfolio/\")"
     ]
   }
 }
