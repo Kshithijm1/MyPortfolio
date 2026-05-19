@@ -1,57 +1,67 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 
 export default function LoadingScreen() {
-    const [done, setDone] = useState(false)
+    const [visible, setVisible] = useState(true)
+    const [fading, setFading] = useState(false)
     const videoRef = useRef<HTMLVideoElement>(null)
 
-    // Safety fallback: never permanently block the site
-    useEffect(() => {
-        const id = setTimeout(() => setDone(true), 8000)
-        return () => clearTimeout(id)
-    }, [])
+    const dismiss = () => {
+        setFading(true)
+        setTimeout(() => setVisible(false), 600)
+    }
 
-    // React does not reliably set the muted DOM *property* via the JSX attribute,
-    // so Chrome's autoplay policy blocks playback. Set it imperatively.
+    // Force muted property and trigger play as soon as the video can play.
+    // Using an event listener (not onCanPlay JSX prop) is more reliable in React.
     useEffect(() => {
         const v = videoRef.current
         if (!v) return
         v.muted = true
-        v.play().catch(() => {})
+        const onCanPlay = () => { v.play().catch(() => {}) }
+        v.addEventListener('canplay', onCanPlay, { once: true })
+        // If already ready, fire immediately
+        if (v.readyState >= 3) onCanPlay()
+        return () => v.removeEventListener('canplay', onCanPlay)
     }, [])
 
-    // Lock background scroll while loading
+    // Safety fallback so the site is never permanently blocked
     useEffect(() => {
-        if (done) return
-        const prev = document.body.style.overflow
+        const id = setTimeout(dismiss, 8000)
+        return () => clearTimeout(id)
+    }, [])
+
+    // Lock background scroll while the screen is up
+    useEffect(() => {
         document.body.style.overflow = 'hidden'
-        return () => { document.body.style.overflow = prev }
-    }, [done])
+        return () => { document.body.style.overflow = '' }
+    }, [])
+
+    if (!visible) return null
 
     return (
-        <AnimatePresence>
-            {!done && (
-                <motion.div
-                    key="loading"
-                    className="fixed inset-0 z-[9999] bg-black flex items-center justify-center"
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.6, ease: 'easeInOut' }}
-                >
-                    <video
-                        ref={videoRef}
-                        src="/logo.mp4"
-                        autoPlay
-                        muted
-                        playsInline
-                        preload="auto"
-                        className="w-48 sm:w-64 h-auto object-contain"
-                        onEnded={() => setDone(true)}
-                        onError={() => setDone(true)}
-                    />
-                </motion.div>
-            )}
-        </AnimatePresence>
+        <div
+            style={{
+                position: 'fixed',
+                inset: 0,
+                zIndex: 9999,
+                background: '#000',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                opacity: fading ? 0 : 1,
+                transition: 'opacity 0.6s ease-in-out',
+            }}
+        >
+            <video
+                ref={videoRef}
+                src="/logo.mp4"
+                playsInline
+                preload="auto"
+                style={{ width: '14rem', height: 'auto' }}
+                onEnded={dismiss}
+                onError={dismiss}
+            />
+        </div>
     )
 }

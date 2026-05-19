@@ -35,11 +35,6 @@ export const metadata: Metadata = {
   title: "Kshithij Malebennur",
   description:
     "Personal portfolio of Kshithij Malebennur — Mechatronics Engineer at the University of Guelph and Software Engineer at Scotiabank. Frontend, backend, and a fascination with the systems in between.",
-  icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
-  },
 };
 
 export default function RootLayout({
