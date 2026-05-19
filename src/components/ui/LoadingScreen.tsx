@@ -5,7 +5,6 @@ import { useState, useEffect, useRef } from 'react'
 export default function LoadingScreen() {
     const [visible, setVisible] = useState(true)
     const [fading, setFading] = useState(false)
-    const [entered, setEntered] = useState(false)
     const videoRef = useRef<HTMLVideoElement>(null)
 
     const dismiss = () => {
@@ -82,14 +81,7 @@ export default function LoadingScreen() {
                 muted
                 playsInline
                 preload="auto"
-                style={{
-                    width: '240px',
-                    height: 'auto',
-                    display: 'block',
-                    opacity: entered ? 1 : 0,
-                    transition: 'opacity 0.4s ease-out',
-                }}
-                onPlaying={() => setEntered(true)}
+                style={{ width: '240px', height: 'auto', display: 'block' }}
                 onEnded={dismiss}
                 onError={dismiss}
             />
