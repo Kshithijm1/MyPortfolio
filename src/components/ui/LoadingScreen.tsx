@@ -8,8 +8,12 @@ export default function LoadingScreen() {
     const videoRef = useRef<HTMLVideoElement>(null)
 
     const dismiss = () => {
+        window.dispatchEvent(new CustomEvent('loading:fadestart'))
         setFading(true)
-        setTimeout(() => setVisible(false), 900)
+        setTimeout(() => {
+            window.dispatchEvent(new CustomEvent('loading:fadeend'))
+            setVisible(false)
+        }, 900)
     }
 
     useEffect(() => {
