@@ -5,11 +5,12 @@ import { useState, useEffect, useRef } from 'react'
 export default function LoadingScreen() {
     const [visible, setVisible] = useState(true)
     const [fading, setFading] = useState(false)
+    const [entered, setEntered] = useState(false)
     const videoRef = useRef<HTMLVideoElement>(null)
 
     const dismiss = () => {
         setFading(true)
-        setTimeout(() => setVisible(false), 600)
+        setTimeout(() => setVisible(false), 900)
     }
 
     useEffect(() => {
@@ -47,8 +48,13 @@ export default function LoadingScreen() {
     }, [])
 
     useEffect(() => {
+        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
         document.body.style.overflow = 'hidden'
-        return () => { document.body.style.overflow = '' }
+        document.body.style.paddingRight = `${scrollbarWidth}px`
+        return () => {
+            document.body.style.overflow = ''
+            document.body.style.paddingRight = ''
+        }
     }, [])
 
     if (!visible) return null
@@ -64,7 +70,7 @@ export default function LoadingScreen() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 opacity: fading ? 0 : 1,
-                transition: 'opacity 0.6s ease-in-out',
+                transition: 'opacity 0.9s ease-out',
                 pointerEvents: fading ? 'none' : 'auto',
             }}
         >
@@ -75,8 +81,14 @@ export default function LoadingScreen() {
                 muted
                 playsInline
                 preload="auto"
-                poster="logo.png"
-                style={{ width: '240px', height: 'auto', display: 'block' }}
+                style={{
+                    width: '240px',
+                    height: 'auto',
+                    display: 'block',
+                    opacity: entered ? 1 : 0,
+                    transition: 'opacity 0.4s ease-out',
+                }}
+                onPlaying={() => setEntered(true)}
                 onEnded={dismiss}
                 onError={dismiss}
             />
