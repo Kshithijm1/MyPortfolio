@@ -1,15 +1,25 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export default function LoadingScreen() {
     const [done, setDone] = useState(false)
+    const videoRef = useRef<HTMLVideoElement>(null)
 
     // Safety fallback: never permanently block the site
     useEffect(() => {
         const id = setTimeout(() => setDone(true), 8000)
         return () => clearTimeout(id)
+    }, [])
+
+    // React does not reliably set the muted DOM *property* via the JSX attribute,
+    // so Chrome's autoplay policy blocks playback. Set it imperatively.
+    useEffect(() => {
+        const v = videoRef.current
+        if (!v) return
+        v.muted = true
+        v.play().catch(() => {})
     }, [])
 
     // Lock background scroll while loading
@@ -30,6 +40,7 @@ export default function LoadingScreen() {
                     transition={{ duration: 0.6, ease: 'easeInOut' }}
                 >
                     <video
+                        ref={videoRef}
                         src="/logo.mp4"
                         autoPlay
                         muted
