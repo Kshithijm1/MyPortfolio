@@ -1,8 +1,8 @@
 'use client'
 
-import { Canvas } from '@react-three/fiber'
-import { AdaptiveEvents, Preload } from '@react-three/drei'
-import { Suspense } from 'react'
+import { Canvas, useThree } from '@react-three/fiber'
+import { AdaptiveEvents, AdaptiveDpr, Preload } from '@react-three/drei'
+import { Suspense, useEffect } from 'react'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import { OrbitalSystem } from './OrbitalSystem'
 import SpaceBackground from './SpaceBackground'
@@ -10,6 +10,15 @@ import { useResponsiveCamera } from '@/hooks/useResponsiveCamera'
 
 function CameraRig() {
     useResponsiveCamera()
+    return null
+}
+
+function ScrollRegressor() {
+    const regress = useThree((s) => s.performance.regress)
+    useEffect(() => {
+        window.addEventListener('scroll', regress, { passive: true })
+        return () => window.removeEventListener('scroll', regress)
+    }, [regress])
     return null
 }
 
@@ -24,6 +33,7 @@ export default function CanvasContainer() {
                 <Canvas
                     camera={{ position: [0, 5, 15], fov: 42 }}
                     dpr={[1, 1.5]}
+                    performance={{ min: 0.5 }}
                     gl={{
                         antialias: true,
                         powerPreference: 'default',
@@ -36,8 +46,10 @@ export default function CanvasContainer() {
                     shadows={false}
                 >
                     <CameraRig />
+                    <ScrollRegressor />
 
                     <AdaptiveEvents />
+                    <AdaptiveDpr pixelated />
 
                     <ambientLight intensity={0.18} />
 
@@ -46,7 +58,7 @@ export default function CanvasContainer() {
                         <Preload all />
                     </Suspense>
 
-                    <EffectComposer enableNormalPass={false} multisampling={0}>
+                    <EffectComposer enableNormalPass={false} multisampling={0} resolutionScale={0.5}>
                         <Bloom
                             luminanceThreshold={1.0}
                             luminanceSmoothing={0.2}

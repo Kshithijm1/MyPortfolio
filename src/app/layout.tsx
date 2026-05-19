@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Sora, IBM_Plex_Mono, Geist } from "next/font/google";
 import "./globals.css";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 const fraunces = Fraunces({
   variable: "--font-display",
@@ -31,9 +32,14 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Kshithij Malebennur — Engineer & Builder",
+  title: "Kshithij Malebennur",
   description:
     "Personal portfolio of Kshithij Malebennur — Mechatronics Engineer at the University of Guelph and Software Engineer at Scotiabank. Frontend, backend, and a fascination with the systems in between.",
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({
@@ -46,6 +52,7 @@ export default function RootLayout({
       <body
         className={`${fraunces.variable} ${sora.variable} ${plexMono.variable} ${geist.variable} antialiased`}
       >
+        <LoadingScreen />
         {children}
       </body>
     </html>

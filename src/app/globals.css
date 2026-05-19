@@ -107,6 +107,11 @@ html {
   background-color: var(--color-void);
 }
 
+.canvas-container {
+  transform: translateZ(0);
+  isolation: isolate;
+}
+
 .canvas-container canvas {
   pointer-events: none;
 }
