@@ -84,10 +84,10 @@ function PostFX({ quality }: { quality: 'high' | 'low' }) {
         <EffectComposer enableNormalPass={false} multisampling={quality === 'high' ? 2 : 0}>
             {/* Restrained bloom — reads as "light source in space", not glare */}
             <Bloom
-                luminanceThreshold={1.0}
-                luminanceSmoothing={0.25}
+                luminanceThreshold={0.85}
+                luminanceSmoothing={0.30}
                 mipmapBlur
-                intensity={quality === 'high' ? 0.5 : 0.32}
+                intensity={quality === 'high' ? 0.72 : 0.40}
             />
 
             {/* Subtle DOF — gently softens deep background, desktop only */}
