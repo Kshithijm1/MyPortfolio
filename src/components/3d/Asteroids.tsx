@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { scrollState, sectionInfluence } from './scrollState'
@@ -53,7 +53,6 @@ export function AsteroidBelt({ count = 70 }: { count?: number }) {
                 }}
                 args={[undefined, undefined, count]}
                 frustumCulled={false}
-                castShadow
                 receiveShadow
             >
                 <dodecahedronGeometry args={[1, 0]} />
@@ -119,6 +118,13 @@ export function DustField({ count = 140 }: { count?: number }) {
         [],
     )
 
+    useEffect(() => {
+        return () => {
+            geometry.dispose()
+            material.dispose()
+        }
+    }, [geometry, material])
+
     useFrame((_, delta) => {
         if (pointsRef.current) pointsRef.current.rotation.y -= delta * 0.0025
     })
@@ -128,7 +134,6 @@ export function DustField({ count = 140 }: { count?: number }) {
 
 export function CloseAsteroid({ quality }: { quality: 'high' | 'low' }) {
     const meshRef = useRef<THREE.Mesh>(null)
-    const matRef  = useRef<THREE.MeshStandardMaterial>(null)
 
     // IcosahedronGeometry with deterministic per-vertex displacement for jagged silhouette
     const geometry = useMemo(() => {
@@ -147,10 +152,14 @@ export function CloseAsteroid({ quality }: { quality: 'high' | 'low' }) {
         return geo
     }, [quality])
 
+    useEffect(() => {
+        return () => { geometry.dispose() }
+    }, [geometry])
+
     useFrame((_, delta) => {
         const mesh = meshRef.current
-        const mat  = matRef.current
-        if (!mesh || !mat) return
+        if (!mesh) return
+        const mat = mesh.material as THREE.MeshStandardMaterial
 
         const progress  = scrollState.sections.projects
         const influence = sectionInfluence(progress)
@@ -180,7 +189,6 @@ export function CloseAsteroid({ quality }: { quality: 'high' | 'low' }) {
             visible={false}
         >
             <meshStandardMaterial
-                ref={matRef}
                 color="#6a6055"
                 roughness={0.94}
                 metalness={0.03}
