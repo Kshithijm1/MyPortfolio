@@ -1,9 +1,20 @@
 'use client'
 
-import { useRef, useMemo } from 'react'
+import { useRef, useMemo, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Html } from '@react-three/drei'
 import * as THREE from 'three'
+import { NOISE_GLSL } from '@/components/glsl/noise'
+import { scrollState, sectionInfluence } from './scrollState'
+
+// ─── ORBIT SPEED TUNING ───────────────────────────────────────────────────
+// Edit these three constants to change animation speed globally.
+// PLANET_SPEED_SCALE = 4 → fastest planet laps in ~37 s, slowest in ~60 s.
+// MOON_SPEED_SCALE   = 4 → fastest moon laps in ~7.5 s, slowest in ~16 s.
+// SYSTEM_DRIFT_SPEED = whole-system Y-axis rotation rate (rad/s).
+export const PLANET_SPEED_SCALE  = 4.0
+export const MOON_SPEED_SCALE    = 4.0
+const        SYSTEM_DRIFT_SPEED  = 0.016
 
 // ─── Data ─────────────────────────────────────────────────────────────────
 type TechNode = {
@@ -20,6 +31,8 @@ type TechNode = {
     moons?: TechNode[]
 }
 
+// Orbital speeds are deliberately slow — real space photography feels still
+// and vast. A moon takes ~30-60s per revolution; planets take minutes.
 const PLANETS_ORBITING_SUN: TechNode[] = [
     {
         id: 'frontend',
@@ -27,17 +40,17 @@ const PLANETS_ORBITING_SUN: TechNode[] = [
         color: '#3D5E9C',
         type: 'planet',
         orbitRadius: 8,
-        orbitSpeed: 0.4,
+        orbitSpeed: 0.042,
         size: 1.2,
         description: 'UI/UX & Creative',
         proficiency: 'Expert',
         experience: 'Focus',
         moons: [
-            { id: 'react',   name: 'React.js',    color: '#61DBFB', type: 'moon', orbitRadius: 2.5, orbitSpeed: 1.2, size: 0.30, description: '', proficiency: '', experience: '' },
-            { id: 'ts',      name: 'TypeScript',  color: '#3178C6', type: 'moon', orbitRadius: 3.3, orbitSpeed: 1.05, size: 0.25, description: '', proficiency: '', experience: '' },
-            { id: 'js',      name: 'JavaScript',  color: '#F7DF1E', type: 'moon', orbitRadius: 4.1, orbitSpeed: 0.9, size: 0.25, description: '', proficiency: '', experience: '' },
-            { id: 'htmlcss', name: 'HTML / CSS',  color: '#E34F26', type: 'moon', orbitRadius: 5.0, orbitSpeed: 0.75, size: 0.25, description: '', proficiency: '', experience: '' },
-            { id: 'blender', name: 'Blender',     color: '#F5792A', type: 'moon', orbitRadius: 5.9, orbitSpeed: 0.65, size: 0.28, description: '', proficiency: '', experience: '' },
+            { id: 'react',   name: 'React.js',    color: '#61DBFB', type: 'moon', orbitRadius: 2.5, orbitSpeed: 0.21,  size: 0.30, description: '', proficiency: '', experience: '' },
+            { id: 'ts',      name: 'TypeScript',  color: '#3178C6', type: 'moon', orbitRadius: 3.3, orbitSpeed: 0.185, size: 0.25, description: '', proficiency: '', experience: '' },
+            { id: 'js',      name: 'JavaScript',  color: '#F7DF1E', type: 'moon', orbitRadius: 4.1, orbitSpeed: 0.16,  size: 0.25, description: '', proficiency: '', experience: '' },
+            { id: 'htmlcss', name: 'HTML / CSS',  color: '#E34F26', type: 'moon', orbitRadius: 5.0, orbitSpeed: 0.135, size: 0.25, description: '', proficiency: '', experience: '' },
+            { id: 'blender', name: 'Blender',     color: '#F5792A', type: 'moon', orbitRadius: 5.9, orbitSpeed: 0.115, size: 0.28, description: '', proficiency: '', experience: '' },
         ],
     },
     {
@@ -46,26 +59,29 @@ const PLANETS_ORBITING_SUN: TechNode[] = [
         color: '#A0421C',
         type: 'planet',
         orbitRadius: 16,
-        orbitSpeed: 0.25,
+        orbitSpeed: 0.026,
         size: 1.4,
         description: 'Systems & Logic',
         proficiency: 'Expert',
         experience: 'Focus',
         moons: [
-            { id: 'python',  name: 'Python',   color: '#3776AB', type: 'moon', orbitRadius: 3.0, orbitSpeed: 1.1, size: 0.30, description: '', proficiency: '', experience: '' },
-            { id: 'nodejs',  name: 'Node.js',  color: '#68A063', type: 'moon', orbitRadius: 3.9, orbitSpeed: 0.95, size: 0.28, description: '', proficiency: '', experience: '' },
-            { id: 'cpp',     name: 'C++',      color: '#00599C', type: 'moon', orbitRadius: 4.8, orbitSpeed: 0.82, size: 0.28, description: '', proficiency: '', experience: '' },
-            { id: 'java',    name: 'Java',     color: '#5382A1', type: 'moon', orbitRadius: 5.7, orbitSpeed: 0.72, size: 0.28, description: '', proficiency: '', experience: '' },
-            { id: 'mysql',   name: 'MySQL',    color: '#4479A1', type: 'moon', orbitRadius: 6.6, orbitSpeed: 0.63, size: 0.24, description: '', proficiency: '', experience: '' },
-            { id: 'rails',   name: 'Rails',    color: '#CC0000', type: 'moon', orbitRadius: 6.9, orbitSpeed: 0.62, size: 0.24, description: '', proficiency: '', experience: '' },
-            { id: 'ros',     name: 'ROS',      color: '#22314E', type: 'moon', orbitRadius: 7.4, orbitSpeed: 0.58, size: 0.20, description: '', proficiency: '', experience: '' },
+            { id: 'python',  name: 'Python',   color: '#3776AB', type: 'moon', orbitRadius: 3.0, orbitSpeed: 0.195, size: 0.30, description: '', proficiency: '', experience: '' },
+            { id: 'nodejs',  name: 'Node.js',  color: '#68A063', type: 'moon', orbitRadius: 3.9, orbitSpeed: 0.17,  size: 0.28, description: '', proficiency: '', experience: '' },
+            { id: 'cpp',     name: 'C++',      color: '#00599C', type: 'moon', orbitRadius: 4.8, orbitSpeed: 0.15,  size: 0.28, description: '', proficiency: '', experience: '' },
+            { id: 'java',    name: 'Java',     color: '#5382A1', type: 'moon', orbitRadius: 5.7, orbitSpeed: 0.13,  size: 0.28, description: '', proficiency: '', experience: '' },
+            { id: 'mysql',   name: 'MySQL',    color: '#4479A1', type: 'moon', orbitRadius: 6.6, orbitSpeed: 0.115, size: 0.24, description: '', proficiency: '', experience: '' },
+            { id: 'rails',   name: 'Rails',    color: '#CC0000', type: 'moon', orbitRadius: 6.9, orbitSpeed: 0.11,  size: 0.24, description: '', proficiency: '', experience: '' },
+            { id: 'ros',     name: 'ROS',      color: '#22314E', type: 'moon', orbitRadius: 7.4, orbitSpeed: 0.10,  size: 0.20, description: '', proficiency: '', experience: '' },
         ],
     },
 ]
 
+const TOTAL_MOONS = PLANETS_ORBITING_SUN.reduce((acc, p) => acc + (p.moons?.length ?? 0), 0)
+
 // Per-planet visual identity. NASA/Voyager/HiRISE-calibrated palettes drive a
 // 5-stop palette ramp + planet-specific surface features (Great Dark Spot,
-// Olympus Mons, polar caps, Valles Marineris).
+// Olympus Mons, polar caps, Valles Marineris). A real CC0 albedo map
+// (Solar System Scope) is blended over the procedural surface when loaded.
 const PLANET_IDENTITY: Record<string, {
     accent: string         // hex used for UI labels
     atmoInner: THREE.Color // inner atmosphere (close to surface)
@@ -77,6 +93,12 @@ const PLANET_IDENTITY: Record<string, {
     polarCap:  THREE.Color // ice / frost cap (rocky) or polar haze (gas)
     stormColor: THREE.Color // dark spot vortex (gas) / dust storm (rocky)
     mottle: number         // 0 = pure gas giant, 1 = rocky
+    textureUrl: string     // CC0 equirectangular albedo
+    textureMix: number     // how much of the real map shows through
+    cloudCoverage: number  // 0..1 procedural cloud layer coverage
+    cloudStretch: [number, number, number] // anisotropic noise → banding for gas
+    cloudOpacity: number
+    hasRing: boolean
 }> = {
     // ── NEPTUNE-class ice giant ─────────────────────────────────────────────
     // Hubble-corrected Voyager: muted methane-blue, low chroma. Real Neptune
@@ -92,6 +114,12 @@ const PLANET_IDENTITY: Record<string, {
         polarCap:  new THREE.Color('#94A6B8'),  // pale haze, gray-blue
         stormColor: new THREE.Color('#101828'), // GDS — near-black
         mottle: 0.15,
+        textureUrl: '/textures/planets/2k_neptune.jpg',
+        textureMix: 0.45,
+        cloudCoverage: 0.42,
+        cloudStretch: [1.0, 2.8, 1.0],          // latitudinal streaks
+        cloudOpacity: 0.26,
+        hasRing: true,                          // faint Adams-ring-style arc
     },
     // ── MARS-class rocky world ──────────────────────────────────────────────
     // MRO HiRISE color-balanced: real Mars is warm BROWN-tan, not bright
@@ -108,8 +136,17 @@ const PLANET_IDENTITY: Record<string, {
         polarCap:  new THREE.Color('#D8C8B4'),  // dusty frost (not pure white)
         stormColor: new THREE.Color('#9C7858'), // dust storm haze
         mottle: 0.90,
+        textureUrl: '/textures/planets/2k_mars.jpg',
+        textureMix: 0.60,
+        cloudCoverage: 0.24,                    // thin water-ice wisps
+        cloudStretch: [1.0, 1.0, 1.0],
+        cloudOpacity: 0.16,
+        hasRing: false,
     },
 }
+
+const MOON_TEXTURE_URL = '/textures/planets/2k_moon.jpg'
+const MOON_TEXTURE_MIX = 0.55
 
 // The sun (central star) sits at world origin. Each planet/moon computes its
 // own light direction every frame as (sunWorldPos - meshWorldPos), then
@@ -121,55 +158,32 @@ const SUN_COLOR = new THREE.Color('#FFF4E0')
 // Initial uniform fallback before first useFrame fires.
 const INITIAL_LIGHT_DIR = new THREE.Vector3(-0.7, 0.55, 0.45).normalize()
 
-// ─── Shared GLSL helpers ─────────────────────────────────────────────────
-const NOISE_GLSL = `
-float hash21(vec2 p) {
-    p = fract(p * vec2(127.1, 311.7));
-    p += dot(p, p + 45.32);
-    return fract(p.x * p.y);
-}
-float vnoise(vec2 p) {
-    vec2 i = floor(p);
-    vec2 f = fract(p);
-    float a = hash21(i);
-    float b = hash21(i + vec2(1.0, 0.0));
-    float c = hash21(i + vec2(0.0, 1.0));
-    float d = hash21(i + vec2(1.0, 1.0));
-    vec2 u = f * f * (3.0 - 2.0 * f);
-    return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
-}
-float fbm(vec2 p) {
-    return vnoise(p)        * 0.500
-         + vnoise(p * 2.03) * 0.250
-         + vnoise(p * 4.11) * 0.125
-         + vnoise(p * 8.17) * 0.063;
+// ─── Shared texture loading (cached, graceful fallback to procedural) ─────
+const _texCache = new Map<string, Promise<THREE.Texture>>()
+
+function loadSharedTexture(url: string): Promise<THREE.Texture> {
+    let promise = _texCache.get(url)
+    if (!promise) {
+        promise = new THREE.TextureLoader().loadAsync(url).then((tex) => {
+            tex.colorSpace = THREE.SRGBColorSpace
+            tex.wrapS = THREE.RepeatWrapping
+            tex.anisotropy = 4
+            return tex
+        })
+        _texCache.set(url, promise)
+    }
+    return promise
 }
 
-// 3D value noise — seamless on sphere surface (no UV seam / pole pinch artifacts)
-float hash31(vec3 p) {
-    p = fract(p * vec3(127.1, 311.7, 74.7));
-    p += dot(p, p.yzx + 45.32);
-    return fract((p.x + p.y) * p.z);
+let _placeholderTex: THREE.Texture | null = null
+function placeholderTexture(): THREE.Texture {
+    if (!_placeholderTex) {
+        const data = new Uint8Array([128, 128, 128, 255])
+        _placeholderTex = new THREE.DataTexture(data, 1, 1)
+        _placeholderTex.needsUpdate = true
+    }
+    return _placeholderTex
 }
-float vnoise3(vec3 p) {
-    vec3 i = floor(p);
-    vec3 f = fract(p);
-    vec3 u = f * f * (3.0 - 2.0 * f);
-    return mix(
-        mix(mix(hash31(i),               hash31(i + vec3(1,0,0)), u.x),
-            mix(hash31(i + vec3(0,1,0)), hash31(i + vec3(1,1,0)), u.x), u.y),
-        mix(mix(hash31(i + vec3(0,0,1)), hash31(i + vec3(1,0,1)), u.x),
-            mix(hash31(i + vec3(0,1,1)), hash31(i + vec3(1,1,1)), u.x), u.y),
-        u.z
-    );
-}
-float fbm3(vec3 p) {
-    return vnoise3(p)        * 0.500
-         + vnoise3(p * 2.03) * 0.250
-         + vnoise3(p * 4.11) * 0.125
-         + vnoise3(p * 8.17) * 0.063;
-}
-`
 
 // ─── PLANET SURFACE SHADER ───────────────────────────────────────────────
 const planetVertex = `
@@ -192,8 +206,9 @@ void main() {
 // giant (Neptune-class) and rocky (Mars-class) via uMottle, with planet-
 // specific features: Great Dark Spot vortex, methane storm streaks, polar
 // caps, Tharsis bulge / Olympus Mons, Valles Marineris canyon. Uses
-// Oren-Nayar diffuse for rough rocky surfaces, broader Rayleigh scattering,
-// and warm sun-color tint on the lit hemisphere.
+// wrapped diffuse for rough rocky surfaces, broader Rayleigh scattering,
+// and warm sun-color tint on the lit hemisphere. A real albedo map (when
+// loaded) is blended over the procedural surface via uMapMix.
 const planetFragment = `
 ${NOISE_GLSL}
 
@@ -209,28 +224,13 @@ uniform vec3  uPolarCap;     // ice cap / polar haze
 uniform vec3  uStormColor;   // Great Dark Spot / dust storm
 uniform float uMottle;       // 0 = gas, 1 = rocky
 uniform float uTime;
+uniform sampler2D uMap;      // real albedo (CC0 Solar System Scope)
+uniform float uMapMix;       // 0 until texture loads
 
 varying vec3 vNormalLocal;
 varying vec3 vNormalView;
 varying vec3 vViewPosition;
 varying vec2 vUv;
-
-// Oren-Nayar diffuse — rough surfaces (regolith, dust) reflect more uniformly
-// than Lambert predicts. Matches photographs of Mars / Moon at all phases.
-float orenNayar(vec3 L, vec3 N, vec3 V, float roughness) {
-    float NdotL = max(0.0, dot(N, L));
-    float NdotV = max(0.0, dot(N, V));
-    if (NdotL <= 0.0) return 0.0;
-    float s2 = roughness * roughness;
-    float A = 1.0 - 0.5 * s2 / (s2 + 0.33);
-    float B = 0.45 * s2 / (s2 + 0.09);
-    vec3 Lp = normalize(L - N * NdotL);
-    vec3 Vp = normalize(V - N * NdotV);
-    float cosPhi = max(0.0, dot(Lp, Vp));
-    float sinAlpha = sqrt(1.0 - NdotV * NdotV);
-    float tanBeta  = sqrt(1.0 - NdotL * NdotL) / max(NdotL, 0.001);
-    return NdotL * (A + B * cosPhi * sinAlpha * tanBeta);
-}
 
 void main() {
     vec3 N = normalize(vNormalView);
@@ -247,7 +247,6 @@ void main() {
     // ───────────────────────────────────────────────────────────────────────
     // GAS GIANT BAND/CLOUD GENERATION (Neptune-like)
     // ───────────────────────────────────────────────────────────────────────
-    // Three-frequency latitude warping — turbulence at multiple scales.
     float warp = fbm3(vec3(sp.x * 4.5, sp.y * 2.4 + uTime * 0.0022, sp.z * 4.5)) * 0.16;
     float warpedLat = lat + warp;
 
@@ -275,7 +274,6 @@ void main() {
     // ───────────────────────────────────────────────────────────────────────
     // ROCKY TERRAIN GENERATION (Mars-like)
     // ───────────────────────────────────────────────────────────────────────
-    // Hemispheric dichotomy — large-scale north/south asymmetry like Mars.
     float dichotomy = fbm3(sp * 1.4 + vec3(2.1, 0.7, 1.3));
     float terrA = fbm3(sp * 4.0);
     float terrB = fbm3(sp * 9.0 + vec3(7.3, 1.9, 4.2));
@@ -320,7 +318,6 @@ void main() {
     surface *= grain;
 
     // Differential AO: darken valley/basin floors (low rampSig) on rocky bodies.
-    // Mimics the dark regolith pooling in crater floors and canyon depths.
     float aoDarken = 1.0 - (1.0 - rampSig) * 0.20 * uMottle;
     surface *= aoDarken;
 
@@ -328,18 +325,25 @@ void main() {
     surface = mix(surface, uColorHigh, methaneClouds * (1.0 - uMottle) * 0.85);
 
     // ───────────────────────────────────────────────────────────────────────
+    // REAL ALBEDO MAP — NASA-derived equirectangular blended over procedural.
+    // Procedural ramp keeps the brand palette and animated detail; the map
+    // brings recognizable large-scale geography (Syrtis Major, Hellas, GDS).
+    // ───────────────────────────────────────────────────────────────────────
+    {
+        vec3 texCol = texture2D(uMap, vUv).rgb;
+        // Match texture luminance into the palette's tonal range
+        surface = mix(surface, texCol * mix(vec3(1.0), uColorMid / max(vec3(0.18), vec3(0.55)), 0.25), uMapMix);
+    }
+
+    // ───────────────────────────────────────────────────────────────────────
     // GAS GIANT FEATURE: Great Dark Spot vortex
     // ───────────────────────────────────────────────────────────────────────
-    // Anticyclonic dark vortex at lat ≈ -0.42, drifting slowly in longitude.
     {
         float spotCenterLon = 0.6 + sin(uTime * 0.012) * 0.4;
         float dLat = (lat + 0.42);
         float dLon = lon - spotCenterLon;
-        // wrap longitude to [-π, π]
         dLon = mod(dLon + 3.14159265, 6.28318530) - 3.14159265;
-        // ellipse: wider in longitude than latitude
         float ellipse = sqrt(dLat * dLat * 14.0 + dLon * dLon * 2.0);
-        // distort the spot edge with noise so it's not a perfect ellipse
         ellipse += (fbm3(sp * 6.0) - 0.5) * 0.18;
         float spotMask = (1.0 - smoothstep(0.20, 0.55, ellipse));
         spotMask *= (1.0 - uMottle);  // gas only
@@ -350,11 +354,10 @@ void main() {
     // ROCKY FEATURE: Polar ice / dust caps
     // ───────────────────────────────────────────────────────────────────────
     {
-        // Ragged-edged caps: two octaves of noise give peninsula-like fractal edge
         float capEdge = fbm3(sp * 7.0 + vec3(0.0, 12.0, 0.0)) * 0.55
                       + fbm3(sp * 18.0 + vec3(3.3, 0.7, 9.1)) * 0.25
                       + fbm3(sp * 40.0 + vec3(6.2, 4.4, 1.8)) * 0.10;
-        capEdge = capEdge / 0.90; // renormalize to [0,1]
+        capEdge = capEdge / 0.90;
         float capMask = smoothstep(0.76, 0.94, absLat + (capEdge - 0.5) * 0.18);
         capMask *= uMottle;
         surface = mix(surface, uPolarCap, capMask);
@@ -364,12 +367,10 @@ void main() {
     // ROCKY FEATURE: Tharsis bulge / Olympus Mons
     // ───────────────────────────────────────────────────────────────────────
     {
-        // Volcanic plateau — rough noise-eroded boundary, not a clean sphere cap
         vec3  monsCenter = normalize(vec3(0.55, 0.30, 0.78));
         float monsDot = dot(sp, monsCenter);
         float monsNoise = (fbm3(sp * 11.0) - 0.5) * 0.10 + (fbm3(sp * 26.0) - 0.5) * 0.04;
         float mons = smoothstep(0.78, 0.96, monsDot + monsNoise) * uMottle;
-        // small dark caldera — also noise-eroded
         float calderaNoise = (fbm3(sp * 40.0) - 0.5) * 0.004;
         float caldera = smoothstep(0.985, 0.998, monsDot + calderaNoise) * uMottle;
         surface = mix(surface, uColorHigh * 1.05, mons * 0.45);
@@ -380,50 +381,39 @@ void main() {
     // ROCKY FEATURE: Valles Marineris canyon
     // ───────────────────────────────────────────────────────────────────────
     {
-        // Long thin equatorial dark scar on the opposite hemisphere from Mons
         vec3  canyonAxis = normalize(vec3(-1.0, -0.05, 0.15));
         float axisDot = dot(sp, canyonAxis);
-        // narrow band perpendicular to axis
         float perpDist = length(sp - canyonAxis * axisDot);
         float canyonBand = smoothstep(0.06, 0.0, perpDist - 0.0)
                          * smoothstep(-0.05, 0.55, axisDot)
                          * smoothstep(0.85, 0.50, axisDot);
-        // jaggedness
         canyonBand *= 0.6 + 0.4 * fbm3(sp * 25.0);
         canyonBand *= uMottle;
         surface = mix(surface, uBandColor, canyonBand * 0.78);
     }
 
     // ───────────────────────────────────────────────────────────────────────
-    // LIGHTING — Oren-Nayar for rocky, soft Lambert for gas
+    // LIGHTING — wrapped diffuse, soft Lambert for gas
     // ───────────────────────────────────────────────────────────────────────
-    // Wide terminator windows so the dark→light transition flows gradually.
     float litGas   = smoothstep(-0.40, 0.60, lambert);
     float litRocky = smoothstep(-0.40, 0.55, lambert);
     float lit = mix(litGas, litRocky, uMottle);
 
-    // Diffuse for gas: standard Lambert.
-    // Diffuse for rocky: WRAPPED half-Lambert squared — falls off as a smooth
-    // S-curve from sub-solar bright to zero ~30 degrees past the geometric
-    // terminator. Avoids the hard cliff Oren-Nayar produces at NdotL = 0.
     float diffGas   = max(0.0, lambert);
     float wrap      = max(0.0, (lambert + 0.45) / 1.45);
     float diffRocky = wrap * wrap;
     float diffuse   = mix(diffGas, diffRocky, uMottle);
 
-    // Bright-side floor keeps surface readable at the terminator.
     vec3 sunlit = surface * uSunColor * (0.08 + 0.92 * diffuse);
 
-    // Night ambient: faint baseline so the terminator has somewhere to fade into.
     float nightTint = mix(0.22, 0.08, uMottle);
     vec3 nightAmbient = uAtmoInner * surface * nightTint;
 
-    // Double-smoothstep blend so night→day handoff is gradual (no visible seam).
     float litBlend = smoothstep(0.0, 1.0, smoothstep(0.0, 1.0, lit));
     vec3 color = mix(nightAmbient, sunlit, litBlend);
 
     // ───────────────────────────────────────────────────────────────────────
-    // VOLCANIC LAVA GLOW — sparse, bright, on rocky night side only
+    // VOLCANIC LAVA GLOW — sparse, dim, on rocky night side only
     // ───────────────────────────────────────────────────────────────────────
     float lavaMask = fbm3(sp * 8.5) * fbm3(sp * 4.0);
     float lavaGlow = smoothstep(0.34, 0.42, lavaMask) * (1.0 - lit) * uMottle;
@@ -431,11 +421,9 @@ void main() {
     color += lavaColor * lavaGlow * 0.18;
 
     // ───────────────────────────────────────────────────────────────────────
-    // ATMOSPHERIC SCATTERING — Rayleigh-style band at terminator, broader
-    // and wavelength-tinted
+    // ATMOSPHERIC SCATTERING — Rayleigh-style band at terminator
     // ───────────────────────────────────────────────────────────────────────
     float scatter = smoothstep(-0.22, 0.06, lambert) * (1.0 - smoothstep(0.06, 0.38, lambert));
-    // Gas planets get Rayleigh scatter at terminator; rocky (Mars) atmosphere barely visible
     float scatterScale = mix(0.26, 0.05, uMottle);
     color += uColorAtmo * scatter * scatterScale;
 
@@ -443,7 +431,6 @@ void main() {
     // LIMB BRIGHTENING (atmosphere viewed edge-on from the lit side)
     // ───────────────────────────────────────────────────────────────────────
     float limb = pow(1.0 - NdotV, 5.5);
-    // Rocky: almost no limb halo (thin atmosphere). Gas: gentle Rayleigh edge.
     float limbScale = mix(0.28, 0.04, uMottle);
     color += uColorAtmo * limb * max(0.0, lit) * limbScale;
 
@@ -453,7 +440,7 @@ void main() {
 }
 `
 
-// ─── ATMOSPHERE SHELL SHADER (limb glow + airglow ring + aurora wisps) ──
+// ─── ATMOSPHERE SHELL SHADER (Rayleigh limb haze) ────────────────────────
 const atmoVertex = `
 varying vec3 vNormalView;
 varying vec3 vViewPosition;
@@ -488,18 +475,108 @@ void main() {
     float rim    = pow(1.0 - facing, 5.0);   // tighter — only the very edge glows
 
     float sunDot = dot(N, normalize(uLightDirView));
-    // Lit side bright; dark side nearly invisible (no bright airglow for solid bodies)
     float litBias = clamp(0.08 + 0.92 * sunDot, 0.04, 1.0);
 
-    // Shift toward outer scatter color at the very limb edge
     vec3 color = mix(uAtmoInner, uAtmoOuter, smoothstep(0.0, 1.0, rim));
-    // Warm with sunlight on the lit crescent
     color = mix(color, color * uSunColor, litBias * 0.35);
 
-    // Rocky planets (Mars, 0.90 mottle) have essentially no visible atmosphere from orbit.
-    // Gas giants (Neptune, 0.15 mottle) keep the full Rayleigh halo.
+    // Rocky planets (Mars) have essentially no visible atmosphere from orbit.
     float atmoStrength = mix(1.0, 0.12, uMottle);
     float alpha = rim * 0.55 * litBias * atmoStrength;
+
+    gl_FragColor = vec4(color, alpha);
+}
+`
+
+// ─── CLOUD LAYER SHADER ──────────────────────────────────────────────────
+// Separate slightly-larger sphere with procedural transparent clouds and
+// very slow independent rotation. 3D noise — no UV seam. Lit by the same
+// per-frame sun direction as the surface so the cloud shadows feel correct.
+const cloudFragment = `
+${NOISE_GLSL}
+
+uniform vec3  uLightDirView;
+uniform vec3  uSunColor;
+uniform float uTime;
+uniform float uCoverage;
+uniform vec3  uStretch;
+uniform float uOpacity;
+
+varying vec3 vNormalLocal;
+varying vec3 vNormalView;
+varying vec3 vViewPosition;
+varying vec2 vUv;
+
+void main() {
+    vec3 N = normalize(vNormalView);
+    vec3 L = normalize(uLightDirView);
+    vec3 V = normalize(vViewPosition);
+
+    vec3 sp = vNormalLocal * uStretch;
+    float n  = fbm3(sp * 2.6 + vec3(uTime * 0.0030, 0.0, uTime * 0.0016));
+    float n2 = fbm3(sp * 6.2 + vec3(13.1, 7.7, 3.3) + vec3(uTime * 0.0018, 0.0, 0.0));
+    float sig = n * 0.72 + n2 * 0.28;
+
+    float clouds = smoothstep(1.0 - uCoverage - 0.16, 1.0 - uCoverage + 0.20, sig);
+
+    float lambert = dot(N, L);
+    float wrap = max(0.0, (lambert + 0.40) / 1.40);
+    float diffuse = wrap * wrap;
+
+    // Thin haze at the limb reads as atmosphere depth, not a hard shell
+    float rim = pow(1.0 - max(0.0, dot(N, V)), 2.0);
+
+    vec3 color = uSunColor * (0.22 + 0.85 * diffuse);
+    float alpha = clouds * (0.06 + 0.70 * diffuse) * (1.0 - rim * 0.45) * uOpacity;
+
+    gl_FragColor = vec4(color, alpha);
+}
+`
+
+// ─── PLANETARY RING SHADER ───────────────────────────────────────────────
+// Flat annulus with procedural band structure, lit-side shading and an
+// analytic planet shadow (the ring darkens where the planet blocks the sun).
+const ringVertex = `
+varying vec3 vPosObj;
+void main() {
+    vPosObj = position;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}
+`
+
+const ringFragment = `
+${NOISE_GLSL}
+
+uniform vec3  uLightDirObj;   // direction toward the sun, ring-local space
+uniform vec3  uColor;
+uniform float uInner;
+uniform float uOuter;
+uniform float uPlanetR;
+uniform float uOpacity;
+
+varying vec3 vPosObj;
+
+void main() {
+    float r = length(vPosObj.xy);
+    float t = clamp((r - uInner) / (uOuter - uInner), 0.0, 1.0);
+
+    // Band structure — narrow rings with gaps, like backlit ice debris
+    float bands = vnoise(vec2(t * 26.0, 0.5)) * 0.55 + vnoise(vec2(t * 9.0, 7.3)) * 0.45;
+    float density = smoothstep(0.30, 0.75, bands);
+
+    // Radial profile: fade in from inner gap, out toward the edge
+    float profile = smoothstep(0.0, 0.10, t) * (1.0 - smoothstep(0.78, 1.0, t));
+
+    // Planet shadow: point is shadowed when it sits behind the planet
+    // relative to the sun and within the planet's silhouette.
+    float along = dot(vPosObj, uLightDirObj);
+    vec3  perp  = vPosObj - uLightDirObj * along;
+    float inShadow = (1.0 - smoothstep(uPlanetR * 0.85, uPlanetR * 1.25, length(perp)))
+                   * smoothstep(0.0, 0.5, -along / uPlanetR);
+
+    float light = 0.55 + 0.45 * abs(uLightDirObj.z);
+    vec3 color = uColor * light * (1.0 - inShadow * 0.85);
+    float alpha = density * profile * uOpacity * (1.0 - inShadow * 0.6);
 
     gl_FragColor = vec4(color, alpha);
 }
@@ -509,8 +586,9 @@ void main() {
 const moonVertex = planetVertex
 // Physically-based moon: Minnaert k=0.70 (measured lunar regolith value),
 // four-scale crater albedo (basins/craters/pits/grain), dark floors, bright
-// rims, ejecta ray systems, highland/maria color differentiation.
-// Uses 3D normal-based noise — no UV seam or pole-pinch artifacts.
+// rims, ejecta ray systems, highland/maria color differentiation, real CC0
+// lunar albedo map blended in, analytic eclipse term (parent planet shadow),
+// and scroll-driven activation glow for the skills tour.
 const moonFragment = `
 ${NOISE_GLSL}
 
@@ -518,6 +596,11 @@ uniform vec3  uLightDirView;
 uniform vec3  uColorLit;
 uniform vec3  uPlanetshineColor;
 uniform float uPlanetshineStrength;
+uniform float uEclipse;     // 1 = fully inside parent planet's shadow
+uniform float uActive;      // scroll-driven skill highlight
+uniform sampler2D uMap;
+uniform float uMapMix;
+uniform float uUvShift;     // per-moon longitude offset into shared map
 
 varying vec3 vNormalLocal;
 varying vec3 vNormalView;
@@ -530,16 +613,17 @@ void main() {
     vec3 V = normalize(vViewPosition);
 
     float NdotL = max(0.0, dot(N, L));
-    // Clamp NdotV away from zero — prevents pow(NdotV, -0.3) blowup at limb
     float NdotV = max(0.04, abs(dot(N, V)));
 
     // Minnaert k=0.70 — real lunar regolith value.
-    // Near-uniform disk at full moon, crisper falloff than Lambert at crescent.
     float k = 0.70;
     float minnaert = pow(NdotL + 0.0001, k) * pow(NdotV, k - 1.0);
 
     float terminator = smoothstep(-0.02, 0.06, dot(N, L));
     float totalLight = clamp(minnaert * terminator, 0.0, 2.0);
+
+    // Parent planet eclipse — the moon passes through the planet's shadow
+    totalLight *= (1.0 - uEclipse * 0.92);
 
     // ── FOUR-SCALE CRATER ALBEDO (3D seamless) ────────────────────────────
     vec3 sp = vNormalLocal;
@@ -557,7 +641,6 @@ void main() {
     float rimT      = smoothstep(0.62, 0.76, crater) * (1.0 - smoothstep(0.76, 0.92, crater));
     float rimBright = 1.0 + rimT * 1.5;
 
-    // Ray systems: only where crater AND pits are simultaneously high
     float rays = step(0.82, crater) * step(0.78, pits) * 1.6;
 
     float albedoRaw = basin * 0.28 + crater * 0.38 + pits * 0.22 + grain * 0.12;
@@ -574,15 +657,28 @@ void main() {
     vec3 baseColor = mix(uColorLit, moonBase, 0.72);
 
     vec3 surface = baseColor * albedo;
-    vec3 color   = surface * totalLight;
+
+    // Real lunar albedo map — shifted in longitude per moon so the twelve
+    // moons sharing one texture don't read as identical clones.
+    {
+        vec2 uvShifted = vec2(fract(vUv.x + uUvShift), vUv.y);
+        vec3 texCol = texture2D(uMap, uvShifted).rgb;
+        surface = mix(surface, baseColor * texCol * 1.35, uMapMix);
+    }
+
+    vec3 color = surface * totalLight;
 
     // Minimal ambient — starlight only, no atmosphere
-    color += baseColor * albedo * 0.016;
+    color += surface * 0.016;
 
     // Planetshine: colored fill light from parent planet on night side
     float facingPlanet = pow(max(0.0, 0.40 - NdotL), 2.5);
     float nightMask    = 1.0 - smoothstep(0.0, 0.18, NdotL);
     color += uPlanetshineColor * uPlanetshineStrength * facingPlanet * nightMask * 0.65;
+
+    // Skill activation: gentle self-illumination in the moon's brand color
+    color += uColorLit * uActive * (0.16 + albedo * 0.22);
+    color *= 1.0 + uActive * 0.22;
 
     gl_FragColor = vec4(color, 1.0);
 }
@@ -594,19 +690,30 @@ function Moon({
     timeOffset,
     parentSize,
     parentAtmo,
+    globalIndex,
+    quality,
 }: {
     data: TechNode
     timeOffset: number
     parentSize: number
     parentAtmo: THREE.Color
+    globalIndex: number
+    quality: 'high' | 'low'
 }) {
     const groupRef = useRef<THREE.Group>(null)
     const meshRef = useRef<THREE.Mesh>(null)
     const matRef = useRef<THREE.ShaderMaterial>(null)
+    const ringMatRef = useRef<THREE.LineBasicMaterial>(null)
+    const labelRef = useRef<HTMLDivElement>(null)
     const angleRef = useRef(timeOffset)
-    const segments = 18
+    const activeRef = useRef(0)
+    const segments = quality === 'high' ? 24 : 16
     const _viewMat3 = useRef(new THREE.Matrix3())
     const _lightView = useRef(new THREE.Vector3())
+    const _moonWorld = useRef(new THREE.Vector3())
+    const _planetWorld = useRef(new THREE.Vector3())
+    const _shadowDir = useRef(new THREE.Vector3())
+    const _rel = useRef(new THREE.Vector3())
 
     const planetshineStrength = parentSize > 0
         ? Math.min(0.18, 0.18 * (parentSize * 2.5) / Math.max(0.5, data.orbitRadius))
@@ -617,28 +724,106 @@ function Moon({
         uColorLit:            { value: new THREE.Color(data.color) },
         uPlanetshineColor:    { value: parentAtmo.clone() },
         uPlanetshineStrength: { value: planetshineStrength },
-    }), [data.color, parentAtmo, planetshineStrength])
+        uEclipse:             { value: 0 },
+        uActive:              { value: 0 },
+        uMap:                 { value: placeholderTexture() },
+        uMapMix:              { value: 0 },
+        uUvShift:             { value: (globalIndex * 0.27) % 1 },
+    }), [data.color, parentAtmo, planetshineStrength, globalIndex])
+
+    // Shared lunar albedo map — loaded once, applied to every moon.
+    useEffect(() => {
+        let cancelled = false
+        loadSharedTexture(MOON_TEXTURE_URL)
+            .then((tex) => {
+                if (cancelled) return
+                uniforms.uMap.value = tex
+                uniforms.uMapMix.value = MOON_TEXTURE_MIX
+            })
+            .catch(() => { /* procedural fallback */ })
+        return () => { cancelled = true }
+    }, [uniforms])
+
+    // Orbit ring geometry, in the parent planet's local frame
+    const orbitRing = useMemo(() => {
+        const pts: THREE.Vector3[] = []
+        for (let i = 0; i <= 72; i++) {
+            const a = (i / 72) * Math.PI * 2
+            pts.push(new THREE.Vector3(Math.cos(a) * data.orbitRadius, 0, Math.sin(a) * data.orbitRadius))
+        }
+        return new THREE.BufferGeometry().setFromPoints(pts)
+    }, [data.orbitRadius])
 
     useFrame((state, delta) => {
         if (!groupRef.current || !meshRef.current) return
-        angleRef.current += delta * data.orbitSpeed
+        angleRef.current += delta * data.orbitSpeed * MOON_SPEED_SCALE
         const a = angleRef.current
         groupRef.current.position.set(Math.cos(a) * data.orbitRadius, 0, Math.sin(a) * data.orbitRadius)
-        meshRef.current.rotation.y += delta * 0.4
+        meshRef.current.rotation.y += delta * 0.05
 
         // Light direction: sun (world origin) → moon world position,
-        // then transform to view space so each moon is lit from the correct angle.
-        groupRef.current.getWorldPosition(_lightView.current)
-        _lightView.current.subVectors(SUN_WORLD_POS, _lightView.current).normalize()
+        // transformed to view space so each moon is lit from the correct angle.
+        groupRef.current.getWorldPosition(_moonWorld.current)
+        _lightView.current.subVectors(SUN_WORLD_POS, _moonWorld.current).normalize()
         _viewMat3.current.setFromMatrix4(state.camera.matrixWorldInverse)
         _lightView.current.applyMatrix3(_viewMat3.current).normalize()
+
+        // Eclipse: is the moon inside the parent planet's shadow cylinder?
+        let eclipse = 0
+        const planetGroup = groupRef.current.parent
+        if (planetGroup) {
+            planetGroup.getWorldPosition(_planetWorld.current)
+            // Shadow axis points from the sun through the planet, outward
+            _shadowDir.current.copy(_planetWorld.current).sub(SUN_WORLD_POS).normalize()
+            _rel.current.copy(_moonWorld.current).sub(_planetWorld.current)
+            const along = _rel.current.dot(_shadowDir.current)
+            if (along > 0) {
+                const perp = _rel.current.addScaledVector(_shadowDir.current, -along).length()
+                const soft = THREE.MathUtils.smoothstep(perp, parentSize * 1.25, parentSize * 0.8)
+                eclipse = soft * THREE.MathUtils.smoothstep(along, 0, parentSize * 0.6)
+            }
+        }
+
+        // Skill activation: during the projects section, moons take turns
+        // "lighting up" as the user scrolls — one skill at a time.
+        const pp = scrollState.sections.projects
+        const sectionOn = Math.min(1, sectionInfluence(pp) * 2.2)
+        const within = THREE.MathUtils.clamp((pp - 0.12) / 0.76, 0, 1)
+        const f = within * TOTAL_MOONS
+        const proximity = THREE.MathUtils.clamp(1.5 - Math.abs(f - (globalIndex + 0.5)), 0, 1)
+        const target = proximity * sectionOn
+        activeRef.current = THREE.MathUtils.damp(activeRef.current, target, 4, delta)
+        const active = activeRef.current
+
+        // Modest scale-up while active
+        meshRef.current.scale.setScalar(1 + active * 0.22)
+
         if (matRef.current) {
             matRef.current.uniforms.uLightDirView.value.copy(_lightView.current)
+            matRef.current.uniforms.uEclipse.value = eclipse
+            matRef.current.uniforms.uActive.value = active
+        }
+        if (ringMatRef.current) {
+            ringMatRef.current.opacity = 0.045 + active * 0.38
+        }
+        if (labelRef.current) {
+            labelRef.current.style.opacity = String(0.38 + active * 0.62)
         }
     })
 
     return (
         <group>
+            {/* Orbital ring — barely visible until this skill activates */}
+            <lineLoop geometry={orbitRing}>
+                <lineBasicMaterial
+                    ref={ringMatRef}
+                    color={data.color}
+                    transparent
+                    opacity={0.045}
+                    depthWrite={false}
+                />
+            </lineLoop>
+
             <group ref={groupRef}>
                 <mesh ref={meshRef}>
                     <sphereGeometry args={[data.size, segments, segments]} />
@@ -650,7 +835,7 @@ function Moon({
                     />
                 </mesh>
 
-                {/* Always-visible skill label */}
+                {/* Skill label — dim by default, full strength when active */}
                 <Html
                     position={[0, data.size + 0.45, 0]}
                     center
@@ -658,7 +843,9 @@ function Moon({
                     zIndexRange={[100, 0]}
                     style={{ pointerEvents: 'none' }}
                 >
-                    <MoonLabel name={data.name} accent={`#${parentAtmo.getHexString()}`} />
+                    <div ref={labelRef} style={{ opacity: 0.38, transition: 'opacity 0.2s linear' }}>
+                        <MoonLabel name={data.name} accent={`#${parentAtmo.getHexString()}`} />
+                    </div>
                 </Html>
             </group>
         </group>
@@ -688,17 +875,33 @@ function MoonLabel({ name, accent }: { name: string; accent: string }) {
 }
 
 // ─── Planet ──────────────────────────────────────────────────────────────
-function Planet({ data, timeOffset = 0 }: { data: TechNode; timeOffset?: number }) {
+function Planet({
+    data,
+    timeOffset = 0,
+    quality,
+}: {
+    data: TechNode
+    timeOffset?: number
+    quality: 'high' | 'low'
+}) {
     const groupRef = useRef<THREE.Group>(null)
     const planetRef = useRef<THREE.Mesh>(null)
+    const cloudRef = useRef<THREE.Mesh>(null)
     const planetMatRef = useRef<THREE.ShaderMaterial>(null)
     const atmoMatRef = useRef<THREE.ShaderMaterial>(null)
+    const cloudMatRef = useRef<THREE.ShaderMaterial>(null)
+    const ringMatRef = useRef<THREE.ShaderMaterial>(null)
+    const ringMeshRef = useRef<THREE.Mesh>(null)
     const angleRef = useRef(timeOffset)
+    const mapMixTarget = useRef(0)
 
     const identity = PLANET_IDENTITY[data.id] ?? PLANET_IDENTITY.frontend
-    const segments = 32
+    const segments = quality === 'high' ? 48 : 28
     const _viewMat3 = useRef(new THREE.Matrix3())
     const _lightView = useRef(new THREE.Vector3())
+    const _worldPos = useRef(new THREE.Vector3())
+    const _ringQuat = useRef(new THREE.Quaternion())
+    const _lightObj = useRef(new THREE.Vector3())
 
     const planetUniforms = useMemo(() => ({
         uLightDirView: { value: INITIAL_LIGHT_DIR.clone() },
@@ -713,6 +916,8 @@ function Planet({ data, timeOffset = 0 }: { data: TechNode; timeOffset?: number 
         uStormColor:   { value: identity.stormColor.clone() },
         uMottle:       { value: identity.mottle },
         uTime:         { value: 0 },
+        uMap:          { value: placeholderTexture() },
+        uMapMix:       { value: 0 },
     }), [identity])
 
     const atmoUniforms = useMemo(() => ({
@@ -723,27 +928,79 @@ function Planet({ data, timeOffset = 0 }: { data: TechNode; timeOffset?: number 
         uMottle:       { value: identity.mottle },
     }), [identity])
 
+    const cloudUniforms = useMemo(() => ({
+        uLightDirView: { value: INITIAL_LIGHT_DIR.clone() },
+        uSunColor:     { value: SUN_COLOR.clone() },
+        uTime:         { value: 0 },
+        uCoverage:     { value: identity.cloudCoverage },
+        uStretch:      { value: new THREE.Vector3(...identity.cloudStretch) },
+        uOpacity:      { value: identity.cloudOpacity },
+    }), [identity])
+
+    const ringInner = data.size * 1.45
+    const ringOuter = data.size * 2.35
+    const ringUniforms = useMemo(() => ({
+        uLightDirObj: { value: INITIAL_LIGHT_DIR.clone() },
+        uColor:       { value: identity.atmoOuter.clone().multiplyScalar(0.85) },
+        uInner:       { value: ringInner },
+        uOuter:       { value: ringOuter },
+        uPlanetR:     { value: data.size },
+        uOpacity:     { value: 0.30 },
+    }), [identity, ringInner, ringOuter, data.size])
+
+    // Real albedo map — fades in over a few seconds once loaded; if the
+    // fetch fails the planet simply stays fully procedural.
+    useEffect(() => {
+        let cancelled = false
+        loadSharedTexture(identity.textureUrl)
+            .then((tex) => {
+                if (cancelled) return
+                planetUniforms.uMap.value = tex
+                mapMixTarget.current = identity.textureMix
+            })
+            .catch(() => { /* procedural fallback */ })
+        return () => { cancelled = true }
+    }, [identity, planetUniforms])
+
     useFrame((state, delta) => {
         if (!groupRef.current) return
-        angleRef.current += delta * data.orbitSpeed
+        angleRef.current += delta * data.orbitSpeed * PLANET_SPEED_SCALE
         const a = angleRef.current
         groupRef.current.position.set(Math.cos(a) * data.orbitRadius, 0, Math.sin(a) * data.orbitRadius)
 
-        if (planetRef.current) planetRef.current.rotation.y += delta * 0.18
+        // Slow, continuous self-rotation; clouds drift independently
+        if (planetRef.current) planetRef.current.rotation.y += delta * 0.04
+        if (cloudRef.current) cloudRef.current.rotation.y += delta * 0.052
 
         const t = state.clock.getElapsedTime()
-        if (planetMatRef.current) planetMatRef.current.uniforms.uTime.value = t
+        if (planetMatRef.current) {
+            planetMatRef.current.uniforms.uTime.value = t
+            // Ease the loaded texture in instead of popping
+            const u = planetMatRef.current.uniforms.uMapMix
+            u.value = THREE.MathUtils.damp(u.value, mapMixTarget.current, 0.8, delta)
+        }
+        if (cloudMatRef.current) cloudMatRef.current.uniforms.uTime.value = t
+
+        // Publish world position for the camera director (projects tour)
+        groupRef.current.getWorldPosition(_worldPos.current)
+        if (data.id === 'frontend' || data.id === 'backend') {
+            scrollState.anchors[data.id].copy(_worldPos.current)
+        }
 
         // Light direction: sun (world origin) → planet world position.
-        // Each planet gets its own direction so the lit hemisphere faces the
-        // central star based on orbital position — not a fixed scene angle.
-        groupRef.current.getWorldPosition(_lightView.current)
-        _lightView.current.subVectors(SUN_WORLD_POS, _lightView.current).normalize()
+        _lightView.current.subVectors(SUN_WORLD_POS, _worldPos.current).normalize()
+        const lightWorld = _lightView.current
+        if (ringMeshRef.current && ringMatRef.current) {
+            // Sun direction in the ring's local frame, for the shadow term
+            ringMeshRef.current.getWorldQuaternion(_ringQuat.current)
+            _lightObj.current.copy(lightWorld).applyQuaternion(_ringQuat.current.invert()).normalize()
+            ringMatRef.current.uniforms.uLightDirObj.value.copy(_lightObj.current)
+        }
         _viewMat3.current.setFromMatrix4(state.camera.matrixWorldInverse)
         _lightView.current.applyMatrix3(_viewMat3.current).normalize()
         if (planetMatRef.current) planetMatRef.current.uniforms.uLightDirView.value.copy(_lightView.current)
         if (atmoMatRef.current)   atmoMatRef.current.uniforms.uLightDirView.value.copy(_lightView.current)
-
+        if (cloudMatRef.current)  cloudMatRef.current.uniforms.uLightDirView.value.copy(_lightView.current)
     })
 
     return (
@@ -775,6 +1032,35 @@ function Planet({ data, timeOffset = 0 }: { data: TechNode; timeOffset?: number 
                     />
                 </mesh>
 
+                {/* Cloud deck — transparent, very slow independent rotation */}
+                <mesh ref={cloudRef} scale={[1.035, 1.035, 1.035]}>
+                    <sphereGeometry args={[data.size, segments, segments]} />
+                    <shaderMaterial
+                        ref={cloudMatRef}
+                        vertexShader={planetVertex}
+                        fragmentShader={cloudFragment}
+                        uniforms={cloudUniforms}
+                        transparent
+                        depthWrite={false}
+                    />
+                </mesh>
+
+                {/* Debris ring — gas giant only, gently tilted */}
+                {identity.hasRing && (
+                    <mesh ref={ringMeshRef} rotation={[-Math.PI / 2 + 0.22, 0, 0.08]}>
+                        <ringGeometry args={[ringInner, ringOuter, 96, 1]} />
+                        <shaderMaterial
+                            ref={ringMatRef}
+                            vertexShader={ringVertex}
+                            fragmentShader={ringFragment}
+                            uniforms={ringUniforms}
+                            transparent
+                            depthWrite={false}
+                            side={THREE.DoubleSide}
+                        />
+                    </mesh>
+                )}
+
                 {/* Editorial planet readout */}
                 <Html
                     position={[0, data.size + 0.85, 0]}
@@ -793,6 +1079,8 @@ function Planet({ data, timeOffset = 0 }: { data: TechNode; timeOffset?: number 
                         timeOffset={i * (Math.PI / 2)}
                         parentSize={data.size}
                         parentAtmo={identity.atmoOuter}
+                        globalIndex={(data.id === 'backend' ? (PLANETS_ORBITING_SUN[0].moons?.length ?? 0) : 0) + i}
+                        quality={quality}
                     />
                 ))}
             </group>
@@ -847,16 +1135,18 @@ function PlanetLabel({ name, accent }: { name: string; accent: string }) {
 }
 
 // ─── STAR SURFACE SHADER ─────────────────────────────────────────────────
-// Photoreal stellar surface: Eddington limb darkening, 3-octave granulation
-// (drifting convection cells), sunspots (dark plage), bright plage regions,
-// stellar pulsation. HDR output crosses bloom threshold so the disk glows.
+// Photoreal G-type stellar surface: Eddington limb darkening, 3-octave
+// granulation (drifting convection cells), sunspots, bright plage regions,
+// slow stellar pulsation. HDR output crosses the bloom threshold so the
+// disk glows; uBoost lets the About section intensify "the core" subtly.
 const starFragment = `
 ${NOISE_GLSL}
 
 uniform float uTime;
-uniform vec3  uColorHot;   // hot core (near-white violet)
-uniform vec3  uColorMid;   // mid plasma
-uniform vec3  uColorEdge;  // cooler limb (deep violet)
+uniform float uBoost;      // scroll-driven intensity (About section)
+uniform vec3  uColorHot;   // hot core (near-white)
+uniform vec3  uColorMid;   // mid photosphere
+uniform vec3  uColorEdge;  // cooler limb
 
 varying vec3 vNormalLocal;
 varying vec3 vNormalView;
@@ -872,7 +1162,6 @@ void main() {
     float limb = pow(NdotV, 0.55);
 
     // Three-octave granulation — drifting convection cells.
-    // Low-freq large cells, mid-freq supergranulation, high-freq texture.
     vec3 sp = vNormalLocal;
     float t = uTime;
     float gran1 = fbm3(sp * 3.5  + vec3(t * 0.022, 0.013 * t, t * 0.018));
@@ -886,19 +1175,17 @@ void main() {
     // Bright plage — hot, plage-like inverse of spots
     float plageMask = smoothstep(0.22, 0.06, gran1);
 
-    // Hot core color blended through mid to cooler edge (limb darkening)
     vec3 hotMix = mix(uColorMid, uColorHot, smoothstep(0.30, 0.85, granulation));
     vec3 surfaceColor = mix(uColorEdge, hotMix, limb);
 
-    // Dark sunspots + bright plage
     surfaceColor *= mix(1.0, 0.32, spotMask);
     surfaceColor += uColorHot * plageMask * 0.40;
 
     // HDR lift — push brightest parts past bloom threshold (1.0)
-    surfaceColor *= 1.55;
+    surfaceColor *= 1.55 * uBoost;
 
-    // Two-mode stellar oscillation
-    float pulse = 1.0 + sin(uTime * 0.45) * 0.04 + sin(uTime * 1.3) * 0.015;
+    // Slow two-mode stellar oscillation — gentle, never a flicker
+    float pulse = 1.0 + sin(uTime * 0.30) * 0.025 + sin(uTime * 0.85) * 0.010;
     surfaceColor *= pulse;
 
     gl_FragColor = vec4(surfaceColor, 1.0);
@@ -908,17 +1195,43 @@ void main() {
 // ─── Central star ────────────────────────────────────────────────────────
 function CentralStar() {
     const starMatRef = useRef<THREE.ShaderMaterial>(null)
+    const coronaRef = useRef<THREE.Sprite>(null)
 
+    // Warm G-type photosphere (~5800K) — the way the sun actually photographs
     const starUniforms = useMemo(() => ({
         uTime:      { value: 0 },
-        uColorHot:  { value: new THREE.Color('#F5E8FF') },  // hot photosphere, violet-white
-        uColorMid:  { value: new THREE.Color('#B89BFF') },  // mid plasma
-        uColorEdge: { value: new THREE.Color('#5A3FB5') },  // cooler limb
+        uBoost:     { value: 1 },
+        uColorHot:  { value: new THREE.Color('#FFF7E8') },  // near-white core
+        uColorMid:  { value: new THREE.Color('#FFD9A0') },  // golden photosphere
+        uColorEdge: { value: new THREE.Color('#C26A2B') },  // cooler amber limb
     }), [])
 
+    const coronaTexture = useMemo(() => {
+        const size = 256
+        const canvas = document.createElement('canvas')
+        canvas.width = size
+        canvas.height = size
+        const ctx = canvas.getContext('2d')!
+        const grad = ctx.createRadialGradient(size / 2, size / 2, size * 0.12, size / 2, size / 2, size / 2)
+        grad.addColorStop(0, 'rgba(255, 236, 200, 0.55)')
+        grad.addColorStop(0.35, 'rgba(255, 206, 140, 0.16)')
+        grad.addColorStop(0.75, 'rgba(255, 180, 110, 0.04)')
+        grad.addColorStop(1, 'rgba(255, 180, 110, 0)')
+        ctx.fillStyle = grad
+        ctx.fillRect(0, 0, size, size)
+        const tex = new THREE.CanvasTexture(canvas)
+        tex.needsUpdate = true
+        return tex
+    }, [])
+
     useFrame((state) => {
+        const boost = 1 + sectionInfluence(scrollState.sections.about) * 0.22
         if (starMatRef.current) {
             starMatRef.current.uniforms.uTime.value = state.clock.getElapsedTime()
+            starMatRef.current.uniforms.uBoost.value = boost
+        }
+        if (coronaRef.current) {
+            ;(coronaRef.current.material as THREE.SpriteMaterial).opacity = 0.34 * boost
         }
     })
 
@@ -936,18 +1249,34 @@ function CentralStar() {
                 />
             </mesh>
 
-            <pointLight distance={42} decay={2} intensity={22} color="#b29dff" />
+            {/* Soft static corona haze around the disk */}
+            <sprite ref={coronaRef} scale={[8.5, 8.5, 1]}>
+                <spriteMaterial
+                    map={coronaTexture}
+                    transparent
+                    opacity={0.34}
+                    depthWrite={false}
+                    blending={THREE.AdditiveBlending}
+                />
+            </sprite>
+
+            {/* Primary light — warm, physically-correct falloff. Reaches the
+                asteroid belt and both planets for the standard materials. */}
+            <pointLight distance={70} decay={2} intensity={26} color="#FFE3B8" />
         </group>
     )
 }
 
 // ─── Public component ───────────────────────────────────────────────────
-export function OrbitalSystem() {
+export function OrbitalSystem({ quality = 'high' }: { quality?: 'high' | 'low' }) {
     const groupRef = useRef<THREE.Group>(null)
 
-    // Equivalent to OrbitControls autoRotateSpeed=0.5: 2π/60*0.5 rad/s
+    // Ambient system drift — one full revolution ≈ 13 minutes. Slow enough
+    // to feel like a long-exposure timelapse, present enough to feel alive.
     useFrame((_, delta) => {
-        if (groupRef.current) groupRef.current.rotation.y += delta * Math.PI / 60
+        if (groupRef.current && !scrollState.reducedMotion) {
+            groupRef.current.rotation.y += delta * SYSTEM_DRIFT_SPEED
+        }
     })
 
     return (
@@ -959,6 +1288,7 @@ export function OrbitalSystem() {
                     key={planet.id}
                     data={planet}
                     timeOffset={i * Math.PI}
+                    quality={quality}
                 />
             ))}
         </group>
