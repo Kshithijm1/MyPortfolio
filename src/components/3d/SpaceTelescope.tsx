@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useRef } from 'react'
+import { useMemo, useRef, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { scrollState, sectionInfluence } from './scrollState'
@@ -26,6 +26,10 @@ export default function SpaceTelescope({ quality }: { quality: 'high' | 'low' })
         () => [bodyMat, panelMat, strutMat, antMat],
         [bodyMat, panelMat, strutMat, antMat],
     )
+
+    useEffect(() => {
+        return () => { allMats.forEach(m => m.dispose()) }
+    }, [allMats])
 
     useFrame((state, delta) => {
         const group = groupRef.current
