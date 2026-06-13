@@ -47,10 +47,66 @@ function detectWebGL(): boolean {
     }
 }
 
+function SpaceEnvironment({ quality }: { quality: 'high' | 'low' }) {
+    const { gl, scene } = useThree()
+
+    useEffect(() => {
+        if (quality === 'low') return
+
+        const W = 512, H = 256
+        const data = new Float32Array(W * H * 4)
+
+        for (let j = 0; j < H; j++) {
+            for (let i = 0; i < W; i++) {
+                const idx = (j * W + i) * 4
+                // Deep space base — near-black with blue-purple tint
+                data[idx]     = 0.001
+                data[idx + 1] = 0.001
+                data[idx + 2] = 0.003
+                data[idx + 3] = 1.0
+
+                // Sun lobe — warm, placed at phi=0, theta=PI/2 (equatorial right)
+                const phi    = (i / W) * Math.PI * 2 - Math.PI   // -π..π
+                const theta  = (j / H) * Math.PI                  // 0..π
+                const dPhi   = phi
+                const dTheta = theta - Math.PI / 2
+                const sun    = Math.exp(-(dPhi * dPhi + dTheta * dTheta) / 0.018) * 8.0
+                data[idx]     += sun * 1.00
+                data[idx + 1] += sun * 0.90
+                data[idx + 2] += sun * 0.70
+
+                // Faint cool ambient on the hemisphere opposite the sun
+                const dPhiOpp = Math.abs(phi) - Math.PI
+                const scatter  = Math.exp(-(dPhiOpp * dPhiOpp + dTheta * dTheta) / 2.0) * 0.006
+                data[idx]     += scatter * 0.4
+                data[idx + 1] += scatter * 0.5
+                data[idx + 2] += scatter * 0.8
+            }
+        }
+
+        const tex = new THREE.DataTexture(data, W, H, THREE.RGBAFormat, THREE.FloatType)
+        tex.mapping    = THREE.EquirectangularReflectionMapping
+        tex.colorSpace = THREE.LinearSRGBColorSpace
+        tex.needsUpdate = true
+
+        const pmrem = new THREE.PMREMGenerator(gl)
+        pmrem.compileEquirectangularShader()
+        const env = pmrem.fromEquirectangular(tex).texture
+        pmrem.dispose()
+        tex.dispose()
+
+        scene.environment = env
+        return () => { env.dispose(); scene.environment = null }
+    }, [gl, scene, quality])
+
+    return null
+}
+
 function Scene({ quality }: { quality: 'high' | 'low' }) {
     return (
         <>
             <CameraDirector />
+            <SpaceEnvironment quality={quality} />
 
             {/* Cool, very low fill so dark sides aren't pure black */}
             <ambientLight intensity={0.16} color="#9fb4d4" />
