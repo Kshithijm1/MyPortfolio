@@ -1,0 +1,197 @@
+{
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\.claude\\settings.local.json": {
+    "mtime": 1779156565.181181,
+    "ast_hash": "f37e91823232c216ec85a526f2f9ac24",
+    "semantic_hash": "f37e91823232c216ec85a526f2f9ac24"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\.vscode\\settings.json": {
+    "mtime": 1767449636.4097674,
+    "ast_hash": "fcd85619e1a474269e07e629c47eee59",
+    "semantic_hash": "fcd85619e1a474269e07e629c47eee59"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\eslint.config.mjs": {
+    "mtime": 1767448815.7266924,
+    "ast_hash": "dfa1f5f6a7037bf39dc510f30b180002",
+    "semantic_hash": "dfa1f5f6a7037bf39dc510f30b180002"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\next.config.ts": {
+    "mtime": 1779092083.702288,
+    "ast_hash": "61c2954e46e3bde9df7f53c39c20d0b3",
+    "semantic_hash": "61c2954e46e3bde9df7f53c39c20d0b3"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\package.json": {
+    "mtime": 1767449095.4075289,
+    "ast_hash": "768676004c3c74976786291a5ae6fb4f",
+    "semantic_hash": "768676004c3c74976786291a5ae6fb4f"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\postcss.config.mjs": {
+    "mtime": 1767448815.8196447,
+    "ast_hash": "239f3ebf717465dc636818a1a619398d",
+    "semantic_hash": "239f3ebf717465dc636818a1a619398d"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\src\\app\\layout.tsx": {
+    "mtime": 1779155750.4106991,
+    "ast_hash": "341e67c9d6993a3406890e3de747408d",
+    "semantic_hash": "341e67c9d6993a3406890e3de747408d"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\src\\app\\page.tsx": {
+    "mtime": 1777347177.7843983,
+    "ast_hash": "050c61bf02b2f2de749eb02f9a5bafd3",
+    "semantic_hash": "050c61bf02b2f2de749eb02f9a5bafd3"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\src\\components\\3d\\CanvasContainer.tsx": {
+    "mtime": 1779159458.4011285,
+    "ast_hash": "40f56737da4dd05d5605383aaf6d4a06",
+    "semantic_hash": "40f56737da4dd05d5605383aaf6d4a06"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\src\\components\\3d\\OrbitalSystem.tsx": {
+    "mtime": 1779126612.3242617,
+    "ast_hash": "fe9d179bf3dffb0bfa056a55efd11951",
+    "semantic_hash": "fe9d179bf3dffb0bfa056a55efd11951"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\src\\components\\3d\\SpaceBackground.tsx": {
+    "mtime": 1777345064.1749253,
+    "ast_hash": "25a60047974b0e8170d13f8b4e345707",
+    "semantic_hash": "25a60047974b0e8170d13f8b4e345707"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\src\\components\\ui\\AboutMe.tsx": {
+    "mtime": 1777607376.057173,
+    "ast_hash": "6e1d09ce6769630123ec049bacd8272a",
+    "semantic_hash": "6e1d09ce6769630123ec049bacd8272a"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\src\\components\\ui\\BentoGrid.tsx": {
+    "mtime": 1777607360.9494393,
+    "ast_hash": "02ba1f3464e8daebe78b0247d87c2aed",
+    "semantic_hash": "02ba1f3464e8daebe78b0247d87c2aed"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\src\\components\\ui\\Contact.tsx": {
+    "mtime": 1767538549.5852284,
+    "ast_hash": "77633a5de3fd6b268be64a437bd67d97",
+    "semantic_hash": "77633a5de3fd6b268be64a437bd67d97"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\src\\components\\ui\\CustomCursor.tsx": {
+    "mtime": 1777345271.6423686,
+    "ast_hash": "22be9b4c09355f6f359bb53a3cd71057",
+    "semantic_hash": "22be9b4c09355f6f359bb53a3cd71057"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\src\\components\\ui\\Education.tsx": {
+    "mtime": 1777607305.181315,
+    "ast_hash": "d68316add6462e24ef5dcc038762d951",
+    "semantic_hash": "d68316add6462e24ef5dcc038762d951"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\src\\components\\ui\\Experience.tsx": {
+    "mtime": 1777607275.4054298,
+    "ast_hash": "a1bd8f6d015cda0e28ba01fbfca263b9",
+    "semantic_hash": "a1bd8f6d015cda0e28ba01fbfca263b9"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\src\\components\\ui\\Hero.tsx": {
+    "mtime": 1778523637.9936397,
+    "ast_hash": "3af4ba7f7ac86865b6fd834c601c43c5",
+    "semantic_hash": "3af4ba7f7ac86865b6fd834c601c43c5"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\src\\components\\ui\\LoadingScreen.tsx": {
+    "mtime": 1779158339.1770387,
+    "ast_hash": "4383b701dd51f0363a09b7d47c07112d",
+    "semantic_hash": "4383b701dd51f0363a09b7d47c07112d"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\src\\components\\ui\\MagneticButton.tsx": {
+    "mtime": 1767456833.4773912,
+    "ast_hash": "2c6a601def74f137d3a70ee8ffcb0210",
+    "semantic_hash": "2c6a601def74f137d3a70ee8ffcb0210"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\src\\components\\ui\\NavBar.tsx": {
+    "mtime": 1767466776.2901511,
+    "ast_hash": "9bb2d76112a1a5cee0f5c8b6fc96fc49",
+    "semantic_hash": "9bb2d76112a1a5cee0f5c8b6fc96fc49"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\src\\components\\ui\\ProjectModal.tsx": {
+    "mtime": 1779093553.8001993,
+    "ast_hash": "e6feb8b4596d7741bc2f32cce68acbf9",
+    "semantic_hash": "e6feb8b4596d7741bc2f32cce68acbf9"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\src\\components\\ui\\TextScramble.tsx": {
+    "mtime": 1767453022.5252445,
+    "ast_hash": "756c1f339ce3315ba1aa3299f283404d",
+    "semantic_hash": "756c1f339ce3315ba1aa3299f283404d"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\src\\components\\ui\\Typewriter.tsx": {
+    "mtime": 1778522021.305603,
+    "ast_hash": "f910cc47f78be21c53d286a7d3162b36",
+    "semantic_hash": "f910cc47f78be21c53d286a7d3162b36"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\src\\hooks\\useResponsiveCamera.ts": {
+    "mtime": 1779126152.7164838,
+    "ast_hash": "aec0cdae9972b52e6def24678d25a33d",
+    "semantic_hash": "aec0cdae9972b52e6def24678d25a33d"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\src\\hooks\\useScrollThreshold.ts": {
+    "mtime": 1779093113.0787575,
+    "ast_hash": "e3402fb856511939ae00bd9b55b26db4",
+    "semantic_hash": "e3402fb856511939ae00bd9b55b26db4"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\tsconfig.json": {
+    "mtime": 1767448851.0717545,
+    "ast_hash": "ee17fd1c97c735e9f3564e3f5251f125",
+    "semantic_hash": "ee17fd1c97c735e9f3564e3f5251f125"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\.github\\workflows\\deploy.yml": {
+    "mtime": 1779092659.8724992,
+    "ast_hash": "dad532911a6e75800eecdcd9f8fc8d0d",
+    "semantic_hash": "dad532911a6e75800eecdcd9f8fc8d0d"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\README.md": {
+    "mtime": 1767448815.6543038,
+    "ast_hash": "f15aaa42d5d299d091b1171097ea56ad",
+    "semantic_hash": "f15aaa42d5d299d091b1171097ea56ad"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\logo.png": {
+    "mtime": 1779154617.7253613,
+    "ast_hash": "cbe1793d56a046c8760c8bec767c5d20",
+    "semantic_hash": "cbe1793d56a046c8760c8bec767c5d20"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\public\\file.svg": {
+    "mtime": 1767448815.8462608,
+    "ast_hash": "d09f95206c3fa0bb9bd9fefabfd0ea71",
+    "semantic_hash": "d09f95206c3fa0bb9bd9fefabfd0ea71"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\public\\globe.svg": {
+    "mtime": 1767448815.8831422,
+    "ast_hash": "2aaafa6a49b6563925fe440891e32717",
+    "semantic_hash": "2aaafa6a49b6563925fe440891e32717"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\public\\logo.png": {
+    "mtime": 1779154617.7253613,
+    "ast_hash": "cbe1793d56a046c8760c8bec767c5d20",
+    "semantic_hash": "cbe1793d56a046c8760c8bec767c5d20"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\public\\next.svg": {
+    "mtime": 1767448815.9157906,
+    "ast_hash": "8e061864f388b47f33a1c3780831193e",
+    "semantic_hash": "8e061864f388b47f33a1c3780831193e"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\public\\vercel.svg": {
+    "mtime": 1767448815.9768147,
+    "ast_hash": "c0af2f507b369b085b35ef4bbe3bcf1e",
+    "semantic_hash": "c0af2f507b369b085b35ef4bbe3bcf1e"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\public\\window.svg": {
+    "mtime": 1767448816.042516,
+    "ast_hash": "a2760511c65806022ad20adf74370ff3",
+    "semantic_hash": "a2760511c65806022ad20adf74370ff3"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\src\\app\\icon.png": {
+    "mtime": 1779154617.7253613,
+    "ast_hash": "cbe1793d56a046c8760c8bec767c5d20",
+    "semantic_hash": "cbe1793d56a046c8760c8bec767c5d20"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\logo.mp4": {
+    "mtime": 1779154617.699021,
+    "ast_hash": "00d620d8cee5f478b436d0e197eaa825",
+    "semantic_hash": "00d620d8cee5f478b436d0e197eaa825"
+  },
+  "C:\\Users\\kshit\\Desktop\\Portfolio\\public\\logo.mp4": {
+    "mtime": 1779154617.699021,
+    "ast_hash": "00d620d8cee5f478b436d0e197eaa825",
+    "semantic_hash": "00d620d8cee5f478b436d0e197eaa825"
+  }
+}

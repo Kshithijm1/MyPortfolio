@@ -35,8 +35,12 @@ export default function Home() {
       <div className="relative z-10 pointer-events-none">
         <NavBar isHidden={isModalOpen} />
         <div className="pointer-events-auto">
-          <Hero />
-          <AboutMe />
+          <section id="hero">
+            <Hero />
+          </section>
+          <section id="about">
+            <AboutMe />
+          </section>
         </div>
 
         {/* Spacer removed for clean snapping */}
