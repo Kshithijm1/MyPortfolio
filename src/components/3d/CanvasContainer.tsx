@@ -17,10 +17,12 @@ import { OrbitalSystem } from './OrbitalSystem'
 import SpaceBackground from './SpaceBackground'
 import Starfield from './Starfield'
 import Nebula from './Nebula'
-import { AsteroidBelt, DustField } from './Asteroids'
+import { AsteroidBelt, DustField, CloseAsteroid } from './Asteroids'
 import Comet from './Comet'
 import ContactBeacon from './ContactBeacon'
 import SunFlare from './SunFlare'
+import SpaceTelescope from './SpaceTelescope'
+import SpaceStation from './SpaceStation'
 import CameraDirector from './CameraDirector'
 import ScrollChoreographer from './ScrollChoreographer'
 import { scrollState } from './scrollState'
@@ -107,6 +109,9 @@ function Scene({ quality }: { quality: 'high' | 'low' }) {
         <>
             <CameraDirector />
             <SpaceEnvironment quality={quality} />
+            <SpaceTelescope quality={quality} />
+            <SpaceStation quality={quality} />
+            <CloseAsteroid quality={quality} />
 
             {/* Cool, very low fill so dark sides aren't pure black */}
             <ambientLight intensity={0.16} color="#9fb4d4" />
