@@ -43,7 +43,7 @@ export default function SpaceTelescope({ quality }: { quality: 'high' | 'low' })
         group.position.z = THREE.MathUtils.lerp(5.0,  3.5, progress)
 
         // Slow continuous tumble + gentle sinusoidal wobble
-        group.rotation.y += delta * 0.08
+        group.rotation.y = (group.rotation.y + delta * 0.08) % (Math.PI * 2)
         group.rotation.z  = Math.sin(state.clock.getElapsedTime() * 0.15) * 0.12
 
         // Fade all materials together
@@ -86,12 +86,12 @@ export default function SpaceTelescope({ quality }: { quality: 'high' | 'low' })
             ))}
 
             {/* High-gain antenna rod */}
-            <mesh castShadow material={antMat} position={[0, -0.82, 0]}>
+            <mesh castShadow receiveShadow material={antMat} position={[0, -0.82, 0]}>
                 <cylinderGeometry args={[0.012, 0.012, 0.55, 6]} />
             </mesh>
 
             {/* Antenna dish (open hemisphere) */}
-            <mesh castShadow material={antMat} position={[0, -1.12, 0]}
+            <mesh castShadow receiveShadow material={antMat} position={[0, -1.12, 0]}
                 rotation={[Math.PI, 0, 0]}>
                 <sphereGeometry args={[0.09, 8, 6, 0, Math.PI * 2, 0, Math.PI / 2]} />
             </mesh>
