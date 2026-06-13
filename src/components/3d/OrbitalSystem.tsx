@@ -1193,7 +1193,7 @@ void main() {
 `
 
 // ─── Central star ────────────────────────────────────────────────────────
-function CentralStar() {
+function CentralStar({ quality }: { quality: 'high' | 'low' }) {
     const starMatRef = useRef<THREE.ShaderMaterial>(null)
     const coronaRef = useRef<THREE.Sprite>(null)
 
@@ -1262,7 +1262,17 @@ function CentralStar() {
 
             {/* Primary light — warm, physically-correct falloff. Reaches the
                 asteroid belt and both planets for the standard materials. */}
-            <pointLight distance={70} decay={2} intensity={26} color="#FFE3B8" />
+            <pointLight
+                    distance={70}
+                    decay={2}
+                    intensity={26}
+                    color="#FFE3B8"
+                    castShadow={quality === 'high'}
+                    shadow-mapSize-width={512}
+                    shadow-mapSize-height={512}
+                    shadow-bias={-0.001}
+                    shadow-radius={3}
+                />
         </group>
     )
 }
@@ -1281,7 +1291,7 @@ export function OrbitalSystem({ quality = 'high' }: { quality?: 'high' | 'low' }
 
     return (
         <group ref={groupRef}>
-            <CentralStar />
+            <CentralStar quality={quality} />
 
             {PLANETS_ORBITING_SUN.map((planet, i) => (
                 <Planet
