@@ -11,7 +11,7 @@ import { scrollState, sectionInfluence } from './scrollState'
 // Edit these three constants to change animation speed globally.
 // PLANET_SPEED_SCALE = 4 → fastest planet laps in ~37 s, slowest in ~60 s.
 // MOON_SPEED_SCALE   = 4 → fastest moon laps in ~7.5 s, slowest in ~16 s.
-// SYSTEM_DRIFT_SPEED = whole-system Y-axis rotation rate (rad/s).
+// SYSTEM_DRIFT_SPEED = whole-system Y-axis rotation rate (rad/s); was 0.008.
 export const PLANET_SPEED_SCALE  = 4.0
 export const MOON_SPEED_SCALE    = 4.0
 const        SYSTEM_DRIFT_SPEED  = 0.016
