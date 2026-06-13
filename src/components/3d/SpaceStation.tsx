@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useRef } from 'react'
+import { useMemo, useRef, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { scrollState, sectionInfluence } from './scrollState'
@@ -30,6 +30,10 @@ export default function SpaceStation({ quality }: { quality: 'high' | 'low' }) {
         [hubMat, habitMat, panelMat, ringMat],
     )
 
+    useEffect(() => {
+        return () => { allMats.forEach(m => m.dispose()) }
+    }, [allMats])
+
     // Four arm directions: +X, -X, +Z, -Z rotated to point along Y (arm geometry is a cylinder along Y)
     const armRotations = useMemo<[number, number, number][]>(() => [
         [0, 0, -Math.PI / 2],    // +X arm
@@ -47,7 +51,7 @@ export default function SpaceStation({ quality }: { quality: 'high' | 'low' }) {
         if (!group.visible) return
 
         // Slow station rotation
-        if (spinRef.current) spinRef.current.rotation.y += delta * 0.12
+        if (spinRef.current) spinRef.current.rotation.y = (spinRef.current.rotation.y + delta * 0.12) % (Math.PI * 2)
 
         for (const m of allMats) {
             m.opacity = THREE.MathUtils.damp(m.opacity, influence, 4, delta)
