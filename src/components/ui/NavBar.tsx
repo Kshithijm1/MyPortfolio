@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import MagneticButton from './MagneticButton'
 import { useScrollThreshold } from '@/hooks/useScrollThreshold'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -15,82 +14,133 @@ const LINKS = [
 
 export default function NavBar({ isHidden = false }: { isHidden?: boolean }) {
     const [active, setActive] = useState('Home')
+    const [mobileOpen, setMobileOpen] = useState(false)
     const isScrolled = useScrollThreshold(100)
 
     return (
-        <nav className={`fixed top-0 left-0 right-0 z-50 p-6 flex justify-between items-center pointer-events-none transition-opacity duration-300 ${isHidden ? 'opacity-0' : 'opacity-100'}`}>
-            {/* Scroll Name Animation Destination */}
-            <div className="absolute left-6 top-6 pointer-events-auto">
-                <AnimatePresence>
-                    {isScrolled && (
-                        <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20, transition: { duration: 0.2 } }}
-                            className="glass-panel px-6 py-2 rounded-full cursor-pointer flex items-center gap-2"
-                            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                        >
-                            <motion.span
-                                layoutId="hero-name-first"
-                                transition={{ type: "spring", stiffness: 100, damping: 20 }}
-                                className="font-bold text-white text-lg tracking-tight"
-                            >
-                                Kshithij
-                            </motion.span>
+        <>
+            {/* Readability gradient — no blur, no repaint cost */}
+            <div
+                className="fixed top-0 left-0 right-0 z-40 pointer-events-none"
+                style={{ height: 96, background: 'linear-gradient(to bottom, rgba(0,0,0,0.40) 0%, transparent 100%)' }}
+            />
 
-                            <motion.span
-                                layoutId="hero-name-last"
-                                transition={{ type: "spring", stiffness: 100, damping: 20 }}
-                                className="font-bold text-gray-400 text-lg tracking-tight"
-                            >
-                                Malebennur
-                            </motion.span>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
+            <nav className={`fixed top-0 left-0 right-0 z-50 pointer-events-none transition-opacity duration-300 ${isHidden ? 'opacity-0' : 'opacity-100'}`}>
+                <div className="flex items-center justify-between px-8 pt-6 pb-4">
 
-            {/* Desktop Nav - Centered & Glassmorphic */}
-            <ul className="hidden md:flex gap-8 mx-auto glass-panel px-8 py-4 rounded-full pointer-events-auto">
-                {LINKS.map((link) => (
-                    <li key={link.name}>
-                        <MagneticButton className="block">
-                            <a
-                                href={link.href}
-                                onClick={() => setActive(link.name)}
-                                className={`text-sm tracking-widest transition-colors duration-300 hover:text-white px-4 py-2 block ${active === link.name ? 'text-white font-bold' : 'text-gray-400'}`}
-                            >
-                                {link.name}
-                            </a>
-                        </MagneticButton>
-                    </li>
-                ))}
-            </ul>
+                    {/* Left: Name (fades in when scrolled past hero) */}
+                    <div className="flex-1 pointer-events-auto min-w-0">
+                        <AnimatePresence>
+                            {isScrolled && (
+                                <motion.button
+                                    initial={{ opacity: 0, y: -8 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -8, transition: { duration: 0.15 } }}
+                                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                                    className="cursor-pointer text-left"
+                                >
+                                    <motion.span
+                                        layoutId="hero-name-first"
+                                        transition={{ type: 'spring', stiffness: 120, damping: 22 }}
+                                        className="text-instrument text-[10px] tracking-[0.14em] text-white/55 hover:text-white/80 transition-colors duration-200"
+                                    >
+                                        KSHITHIJ
+                                    </motion.span>
+                                    <span className="text-instrument text-[10px] tracking-[0.14em] text-white/25 ml-2">
+                                        MALEBENNUR
+                                    </span>
+                                </motion.button>
+                            )}
+                        </AnimatePresence>
+                    </div>
 
-            {/* Mobile Nav - Hamburger */}
-            <div className="md:hidden pointer-events-auto ml-auto">
-                <details className="group relative">
-                    <summary className="list-none cursor-pointer glass-panel p-3 rounded-lg text-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                        </svg>
-                    </summary>
-
-                    <ul className="absolute right-0 top-12 w-48 glass-panel p-4 rounded-xl flex flex-col gap-4">
+                    {/* Center: Desktop nav links */}
+                    <ul className="hidden md:flex items-center gap-9 pointer-events-auto">
                         {LINKS.map((link) => (
-                            <li key={link.name}>
+                            <li key={link.name} className="relative">
                                 <a
                                     href={link.href}
                                     onClick={() => setActive(link.name)}
-                                    className={`block text-sm transition-colors duration-300 hover:text-white ${active === link.name ? 'text-white font-bold' : 'text-gray-400'}`}
+                                    className={`block text-instrument text-[10px] tracking-[0.14em] pb-0.5 transition-colors duration-200 ${
+                                        active === link.name
+                                            ? 'text-white/80'
+                                            : 'text-white/30 hover:text-white/60'
+                                    }`}
                                 >
-                                    {link.name}
+                                    {link.name.toUpperCase()}
                                 </a>
+                                {active === link.name && (
+                                    <motion.div
+                                        layoutId="nav-underline"
+                                        className="absolute -bottom-0.5 left-0 right-0 h-px"
+                                        style={{ background: 'rgba(255,255,255,0.45)' }}
+                                        transition={{ type: 'spring', stiffness: 320, damping: 30 }}
+                                    />
+                                )}
                             </li>
                         ))}
                     </ul>
-                </details>
-            </div>
-        </nav>
+
+                    {/* Right: Mobile toggle + spacer */}
+                    <div className="flex-1 flex justify-end pointer-events-auto">
+                        <button
+                            onClick={() => setMobileOpen(!mobileOpen)}
+                            className="md:hidden text-white/35 hover:text-white/65 transition-colors duration-200 p-1"
+                            aria-label="Toggle navigation"
+                        >
+                            <div className="flex flex-col justify-center gap-[5px] w-5 h-5">
+                                <span
+                                    className="block h-px bg-current transition-all duration-300 origin-center"
+                                    style={{ transform: mobileOpen ? 'rotate(45deg) translateY(6px)' : 'none' }}
+                                />
+                                <span
+                                    className="block h-px bg-current transition-all duration-300"
+                                    style={{ opacity: mobileOpen ? 0 : 1 }}
+                                />
+                                <span
+                                    className="block h-px bg-current transition-all duration-300 origin-center"
+                                    style={{ transform: mobileOpen ? 'rotate(-45deg) translateY(-6px)' : 'none' }}
+                                />
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                {/* Mobile dropdown — no backdrop-filter */}
+                <AnimatePresence>
+                    {mobileOpen && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -6 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -6 }}
+                            transition={{ duration: 0.18 }}
+                            className="md:hidden pointer-events-auto mx-6 mt-1"
+                            style={{
+                                background: 'rgba(3,3,10,0.96)',
+                                border: '1px solid rgba(255,255,255,0.07)',
+                            }}
+                        >
+                            <ul className="py-2">
+                                {LINKS.map((link) => (
+                                    <li key={link.name}>
+                                        <a
+                                            href={link.href}
+                                            onClick={() => { setActive(link.name); setMobileOpen(false) }}
+                                            className={`block px-6 py-3 text-instrument text-[10px] tracking-[0.14em] transition-colors duration-200 ${
+                                                active === link.name
+                                                    ? 'text-white/75'
+                                                    : 'text-white/30 hover:text-white/58'
+                                            }`}
+                                        >
+                                            {link.name.toUpperCase()}
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </nav>
+        </>
     )
 }

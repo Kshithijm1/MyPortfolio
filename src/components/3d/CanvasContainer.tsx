@@ -10,7 +10,6 @@ import {
     Vignette,
     Noise,
     ChromaticAberration,
-    DepthOfField,
 } from '@react-three/postprocessing'
 import { BlendFunction } from 'postprocessing'
 import { OrbitalSystem } from './OrbitalSystem'
@@ -139,36 +138,26 @@ function Scene({ quality }: { quality: 'high' | 'low' }) {
 
 function PostFX({ quality }: { quality: 'high' | 'low' }) {
     // Minimal chromatic aberration on the edges only
-    const caOffset = useMemo(() => new THREE.Vector2(0.0006, 0.0006), [])
+    const caOffset = useMemo(() => new THREE.Vector2(0.0003, 0.0003), [])
 
     return (
         <EffectComposer enableNormalPass={false} multisampling={quality === 'high' ? 2 : 0}>
-            {/* Restrained bloom — reads as "light source in space", not glare */}
+            {/* Sun-only bloom — higher threshold so planets don't glow */}
             <Bloom
-                luminanceThreshold={0.85}
-                luminanceSmoothing={0.30}
+                luminanceThreshold={0.92}
+                luminanceSmoothing={0.20}
                 mipmapBlur
-                intensity={quality === 'high' ? 0.72 : 0.40}
+                intensity={quality === 'high' ? 0.38 : 0.22}
             />
 
-            {/* Subtle DOF — gently softens deep background, desktop only */}
-            {quality === 'high' ? (
-                <DepthOfField
-                    focusDistance={0.012}
-                    focalLength={0.05}
-                    bokehScale={2.2}
-                    height={480}
-                />
-            ) : (
-                <></>
-            )}
+            {/* DepthOfField removed — it blurred planets/stars, making them look soft/fake */}
 
-            {/* Edges-only chromatic aberration */}
+            {/* Minimal chromatic aberration — barely perceptible */}
             <ChromaticAberration
                 blendFunction={BlendFunction.NORMAL}
                 offset={caOffset}
                 radialModulation
-                modulationOffset={0.35}
+                modulationOffset={0.55}
             />
 
             {/* Cinematic frame: soft vignette + faint film grain */}

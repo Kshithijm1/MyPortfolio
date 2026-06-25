@@ -5,7 +5,7 @@ import { useRef } from 'react'
 
 const EXPERIENCE_DATA = [
     {
-        year: 'Jan 2026 - Present',
+        year: 'Jan 2026 — Present',
         title: 'Full Stack Engineering Intern',
         company: 'Scotiabank — InvestIQ Team',
         description: 'Engineered a SharePoint-style hierarchical document folder system from scratch using Node.js and GCP, delivering the team\'s primary March milestone. Architected an internal agentic workflow POC using LangChain, LangGraph, Node.js, BigQuery, and Plotly — enabling portfolio managers to query financial data via natural language and receive real-time chart visualizations without writing SQL. Led a 5-person team in "Curiosity," an agentic internal knowledge platform; placed 2nd of 6 teams company-wide with projected savings of $7.8M and 6–8 weeks of onboarding time per new hire.',
@@ -19,31 +19,31 @@ const EXPERIENCE_DATA = [
         skills: ['Data Entry', 'Compliance', 'Federal Elections']
     },
     {
-        year: 'Sept 2024 - Sept 2025',
+        year: 'Sept 2024 — Sept 2025',
         title: 'Robotics Team Member',
         company: 'Gryphon Robotics — University of Guelph',
         description: 'Engaged in the design, development, and programming of autonomous and remote-controlled robots, building skills in robotics systems, coding, and team collaboration.',
         skills: ['ROS', 'C++', 'Python', 'Robotics', 'Autonomous Systems']
     },
     {
-        year: 'Aug 2023 - May 2024',
+        year: 'Aug 2023 — May 2024',
         title: 'Co-Founder',
         company: 'Vasant Noire',
-        description: 'Designed a user-focused, responsive website using HTML, CSS, and JavaScript. Designed consumer fashion attires based on luxury and streetwear trends. Produced 3D advertising content with Blender animations and SolidWorks 3D modeling to boost marketing. Developed and executed test cases for the website to identify defects.',
+        description: 'Designed a user-focused, responsive website using HTML, CSS, and JavaScript. Designed consumer fashion attires based on luxury and streetwear trends. Produced 3D advertising content with Blender animations and SolidWorks 3D modeling to boost marketing.',
         skills: ['HTML', 'CSS', 'JavaScript', 'Blender', 'SolidWorks']
     },
     {
-        year: 'May 2022 - Dec 2022',
+        year: 'May 2022 — Dec 2022',
         title: 'Social Media Manager',
         company: 'SalKreation',
-        description: 'Developed marketing content including blogs, promotional materials, and social media advertisements, enhancing brand visibility by 20%. Created an AI-powered tool leveraging machine learning to analyze viewer interactions per post and benchmark top-performing content within the same genre.',
+        description: 'Developed marketing content including blogs, promotional materials, and social media advertisements, enhancing brand visibility by 20%. Created an AI-powered tool leveraging machine learning to analyze viewer interactions per post and benchmark top-performing content.',
         skills: ['Content Creation', 'Machine Learning', 'Social Media', 'Analytics']
     },
     {
-        year: 'Feb 2021 - Jun 2021',
+        year: 'Feb 2021 — Jun 2021',
         title: 'Vice President of Public Relations',
         company: 'Gavel Club — Uplus Education',
-        description: 'Collaborated in weekly workshops to enhance public speaking and reduce social anxiety, achieving noticeable improvements over six months. Participated in executive meetings to increase social media viewership and devise engagement strategies, successfully attracting a larger customer base.',
+        description: 'Collaborated in weekly workshops to enhance public speaking and reduce social anxiety, achieving noticeable improvements over six months. Participated in executive meetings to increase social media viewership and devise engagement strategies.',
         skills: ['Public Relations', 'Public Speaking', 'Strategy']
     }
 ]
@@ -52,77 +52,106 @@ export default function Experience() {
     const containerRef = useRef<HTMLDivElement>(null)
     const { scrollYProgress } = useScroll({
         target: containerRef,
-        offset: ["start center", "end center"]
+        offset: ['start center', 'end center']
     })
 
-    const scaleY = useTransform(scrollYProgress, [0, 1], [0, 1])
+    const lineScaleY = useTransform(scrollYProgress, [0, 1], [0, 1])
 
     return (
-        <section ref={containerRef} className="container mx-auto px-4 py-24 relative z-10 min-h-screen flex flex-col items-center">
-            <motion.h2
-                initial={{ opacity: 0, scale: 0.5 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                className="text-4xl md:text-5xl font-bold mb-20 text-center text-white"
-            >
-                Experience
-            </motion.h2>
+        <section ref={containerRef} className="container mx-auto px-6 md:px-8 py-28 relative z-10 min-h-screen flex flex-col items-center">
+
+            {/* Section header */}
+            <div className="w-full max-w-5xl mb-16">
+                <div className="flex items-center gap-5 mb-10">
+                    <span className="text-instrument text-[9px] text-white/18 tracking-[0.18em]">02</span>
+                    <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
+                    <span className="text-instrument text-[9px] text-white/18 tracking-[0.18em]">EXPERIENCE</span>
+                </div>
+                <motion.h2
+                    initial={{ opacity: 0, y: 14 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.55, ease: [0.25, 0.1, 0.25, 1] }}
+                    className="text-4xl md:text-5xl text-white"
+                >
+                    Experience
+                </motion.h2>
+            </div>
 
             <div className="relative w-full max-w-5xl">
-                {/* Center Line (Glowing Beam) */}
-                <div className="absolute left-[20px] md:left-1/2 top-0 bottom-0 w-0.5 bg-white/5 md:-translate-x-1/2 rounded-full overflow-hidden">
+                {/* Single centered timeline spine — desktop only */}
+                <div
+                    className="hidden md:block absolute top-0 bottom-0 overflow-hidden"
+                    style={{
+                        left: 'calc(50% - 0.5px)',
+                        width: 1,
+                        background: 'rgba(255,255,255,0.05)',
+                    }}
+                >
                     <motion.div
-                        style={{ scaleY, transformOrigin: 'top' }}
-                        className="w-full h-full bg-gradient-to-b from-cyan-500 via-purple-500 to-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.8)]"
+                        style={{ scaleY: lineScaleY, transformOrigin: 'top' }}
+                        className="w-full h-full"
                     />
                 </div>
 
-                <div className="space-y-12 md:space-y-24">
+                <div className="space-y-10 md:space-y-20">
                     {EXPERIENCE_DATA.map((item, i) => (
                         <div
                             key={i}
-                            className={`relative flex flex-col md:flex-row gap-8 ${i % 2 === 0 ? 'md:flex-row-reverse' : ''}`}
+                            className={`relative flex flex-col md:flex-row gap-6 ${i % 2 === 0 ? 'md:flex-row-reverse' : ''}`}
                         >
-                            {/* Dot - Scales up when line passes */}
-                            <motion.div
-                                initial={{ scale: 0 }}
-                                whileInView={{ scale: 1 }}
-                                viewport={{ once: true, margin: "-20%" }}
-                                transition={{ duration: 0.4, type: "spring" }}
-                                className="absolute left-[11px] md:left-1/2 top-0 w-5 h-5 bg-black border-2 border-cyan-400 rounded-full z-10 md:-translate-x-1/2 translate-y-1.5 shadow-[0_0_10px_rgba(6,182,212,0.5)]"
-                            >
-                                <div className="absolute inset-1 bg-cyan-400 rounded-full animate-pulse" />
-                            </motion.div>
 
-                            {/* Content Side - Slides OUT from center */}
+                            {/* Card */}
                             <motion.div
-                                initial={{ opacity: 0, x: i % 2 === 0 ? -50 : 50, filter: "blur(10px)" }}
-                                whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-                                viewport={{ once: true, margin: "-100px" }}
-                                transition={{ duration: 0.6, type: "spring", bounce: 0.4 }}
-                                className="ml-12 md:ml-0 md:w-1/2"
+                                initial={{ opacity: 0, x: i % 2 === 0 ? -24 : 24 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true, margin: '-60px' }}
+                                transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+                                className="md:w-1/2"
                             >
-                                <div className={`glass-panel p-6 rounded-2xl border border-white/10 hover:border-cyan-500/30 transition-colors group ${i % 2 === 0 ? 'md:mr-12' : 'md:ml-12'
-                                    }`}>
-                                    <span className="inline-block px-3 py-1 mb-4 text-xs font-bold tracking-wider text-cyan-400 uppercase bg-cyan-900/20 rounded-full border border-cyan-500/30 group-hover:bg-cyan-500/20 transition-colors">
+                                <div
+                                    className={`p-6 border transition-colors duration-300 ${
+                                        i % 2 === 0 ? 'md:mr-10' : 'md:ml-10'
+                                    }`}
+                                    style={{
+                                        background: 'rgba(4,4,12,0.68)',
+                                        borderColor: 'rgba(255,255,255,0.065)',
+                                    }}
+                                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.13)')}
+                                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.065)')}
+                                >
+                                    <span className="text-instrument text-[9px] text-white/22 tracking-[0.14em] block mb-3">
                                         {item.year}
                                     </span>
-                                    <h3 className="text-xl md:text-2xl font-bold text-white mb-1">{item.title}</h3>
-                                    <p className="text-purple-400 font-medium mb-4">{item.company}</p>
-                                    <p className="text-gray-400 leading-relaxed mb-4 text-sm md:text-base">
+                                    <h3 className="text-[17px] font-medium text-white/90 mb-1 leading-snug">
+                                        {item.title}
+                                    </h3>
+                                    <p className="text-white/38 text-sm mb-5 font-light">
+                                        {item.company}
+                                    </p>
+                                    <p className="text-white/48 leading-[1.75] text-[13px]"
+                                        style={{ textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
                                         {item.description}
                                     </p>
-                                    <div className="flex flex-wrap gap-2">
-                                        {item.skills.map(skill => (
-                                            <span key={skill} className="text-xs text-gray-500 bg-white/5 px-2 py-1 rounded border border-white/5">
-                                                {skill}
-                                            </span>
-                                        ))}
-                                    </div>
+                                    {item.skills.length > 0 && (
+                                        <div
+                                            className="flex flex-wrap gap-x-4 gap-y-1.5 mt-5 pt-4"
+                                            style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
+                                        >
+                                            {item.skills.map(skill => (
+                                                <span
+                                                    key={skill}
+                                                    className="text-instrument text-[8px] text-white/22 tracking-[0.10em]"
+                                                >
+                                                    {skill}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             </motion.div>
 
-                            {/* Empty side for layout balance */}
+                            {/* Layout balance spacer */}
                             <div className="hidden md:block md:w-1/2" />
                         </div>
                     ))}

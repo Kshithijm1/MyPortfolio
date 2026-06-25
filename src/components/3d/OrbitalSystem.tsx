@@ -119,7 +119,7 @@ const PLANET_IDENTITY: Record<string, {
         cloudCoverage: 0.42,
         cloudStretch: [1.0, 2.8, 1.0],          // latitudinal streaks
         cloudOpacity: 0.26,
-        hasRing: true,                          // faint Adams-ring-style arc
+        hasRing: false,                         // no ring
     },
     // ── MARS-class rocky world ──────────────────────────────────────────────
     // MRO HiRISE color-balanced: real Mars is warm BROWN-tan, not bright
@@ -431,7 +431,7 @@ void main() {
     // LIMB BRIGHTENING (atmosphere viewed edge-on from the lit side)
     // ───────────────────────────────────────────────────────────────────────
     float limb = pow(1.0 - NdotV, 5.5);
-    float limbScale = mix(0.28, 0.04, uMottle);
+    float limbScale = mix(0.10, 0.04, uMottle);
     color += uColorAtmo * limb * max(0.0, lit) * limbScale;
 
     // No specular — at orbital scale, no real planet produces a coherent highlight.
@@ -482,7 +482,7 @@ void main() {
 
     // Rocky planets (Mars) have essentially no visible atmosphere from orbit.
     float atmoStrength = mix(1.0, 0.12, uMottle);
-    float alpha = rim * 0.55 * litBias * atmoStrength;
+    float alpha = rim * 0.16 * litBias * atmoStrength;
 
     gl_FragColor = vec4(color, alpha);
 }
@@ -703,7 +703,6 @@ function Moon({
     const groupRef = useRef<THREE.Group>(null)
     const meshRef = useRef<THREE.Mesh>(null)
     const matRef = useRef<THREE.ShaderMaterial>(null)
-    const ringMatRef = useRef<THREE.LineBasicMaterial>(null)
     const labelRef = useRef<HTMLDivElement>(null)
     const angleRef = useRef(timeOffset)
     const activeRef = useRef(0)
@@ -744,15 +743,7 @@ function Moon({
         return () => { cancelled = true }
     }, [uniforms])
 
-    // Orbit ring geometry, in the parent planet's local frame
-    const orbitRing = useMemo(() => {
-        const pts: THREE.Vector3[] = []
-        for (let i = 0; i <= 72; i++) {
-            const a = (i / 72) * Math.PI * 2
-            pts.push(new THREE.Vector3(Math.cos(a) * data.orbitRadius, 0, Math.sin(a) * data.orbitRadius))
-        }
-        return new THREE.BufferGeometry().setFromPoints(pts)
-    }, [data.orbitRadius])
+    // Orbit ring removed — colored orbit lines are not physically realistic
 
     useFrame((state, delta) => {
         if (!groupRef.current || !meshRef.current) return
@@ -803,9 +794,7 @@ function Moon({
             matRef.current.uniforms.uEclipse.value = eclipse
             matRef.current.uniforms.uActive.value = active
         }
-        if (ringMatRef.current) {
-            ringMatRef.current.opacity = 0.045 + active * 0.38
-        }
+
         if (labelRef.current) {
             labelRef.current.style.opacity = String(0.38 + active * 0.62)
         }
@@ -813,17 +802,6 @@ function Moon({
 
     return (
         <group>
-            {/* Orbital ring — barely visible until this skill activates */}
-            <lineLoop geometry={orbitRing}>
-                <lineBasicMaterial
-                    ref={ringMatRef}
-                    color={data.color}
-                    transparent
-                    opacity={0.045}
-                    depthWrite={false}
-                />
-            </lineLoop>
-
             <group ref={groupRef}>
                 <mesh ref={meshRef}>
                     <sphereGeometry args={[data.size, segments, segments]} />
@@ -1088,48 +1066,22 @@ function Planet({
     )
 }
 
-function PlanetLabel({ name, accent }: { name: string; accent: string }) {
+function PlanetLabel({ name }: { name: string; accent: string }) {
     return (
         <div
             style={{
                 fontFamily: 'var(--font-instrument), ui-monospace, monospace',
-                fontSize: '10px',
-                fontWeight: 500,
-                letterSpacing: '0.32em',
+                fontSize: '9px',
+                letterSpacing: '0.26em',
                 textTransform: 'uppercase',
-                color: '#f4f7fc',
-                padding: '6px 14px',
-                borderRadius: '4px',
-                background: 'rgba(6, 8, 14, 0.75)',
-                border: `1px solid ${accent}55`,
-                boxShadow: `0 0 18px ${accent}22, 0 8px 28px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.05)`,
+                color: 'rgba(255,255,255,0.82)',
+                padding: '4px 10px 3px',
+                background: 'rgba(3,5,10,0.78)',
+                borderTop: '1px solid rgba(255,255,255,0.18)',
                 whiteSpace: 'nowrap',
-                opacity: 0.92,
-                position: 'relative',
             }}
         >
-            <span style={{
-                position: 'absolute',
-                top: '50%',
-                left: '-14px',
-                width: '8px',
-                height: '1px',
-                background: accent,
-                opacity: 0.7,
-                transform: 'translateY(-50%)',
-            }} />
-            <span style={{ color: accent, marginRight: '8px' }}>◇</span>
             {name}
-            <span style={{
-                position: 'absolute',
-                top: '50%',
-                right: '-14px',
-                width: '8px',
-                height: '1px',
-                background: accent,
-                opacity: 0.7,
-                transform: 'translateY(-50%)',
-            }} />
         </div>
     )
 }

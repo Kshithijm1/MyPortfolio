@@ -112,19 +112,19 @@ export default function Nebula() {
                 position={[-35, 22, -95]}
                 rotation={[0, 0.25, 0.3]}
                 scale={[160, 90]}
-                colorA="#1B2C4E"
-                colorB="#274B55"
-                opacity={0.085}
+                colorA="#121A28"
+                colorB="#1A2830"
+                opacity={0.065}
                 seed={3.7}
             />
-            {/* Faint dust-rose veil, lower right — barely above perception */}
+            {/* Faint neutral-cool veil, lower right */}
             <NebulaSheet
                 position={[40, -18, -120]}
                 rotation={[0, -0.2, -0.35]}
                 scale={[180, 100]}
-                colorA="#3A2438"
-                colorB="#1E2240"
-                opacity={0.06}
+                colorA="#1A1820"
+                colorB="#141825"
+                opacity={0.045}
                 seed={11.2}
             />
         </group>

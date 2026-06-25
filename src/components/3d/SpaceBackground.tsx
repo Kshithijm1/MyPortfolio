@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+// Animated mote + cosmic ray layers removed — they caused overstimulation
+// and the static backdrop alone reads as calmer, more realistic deep space.
 
 /**
  * Photoreal space backdrop, rendered on plain 2D canvases that sit BEHIND the
@@ -22,26 +24,6 @@ type Star = {
     glow: boolean
 }
 
-type Mote = {
-    x: number
-    y: number
-    vx: number
-    vy: number
-    r: number
-    aBase: number
-    aPhase: number
-    aFreq: number
-}
-
-type CosmicRay = {
-    x: number
-    y: number
-    angle: number
-    length: number
-    bornAt: number
-    duration: number
-    peakAlpha: number
-}
 
 const STAR_COLORS: Array<[string, number]> = [
     ['#ffffff', 0.6],
@@ -102,13 +84,14 @@ function drawStaticScene(canvas: HTMLCanvasElement) {
         const bandW = Math.max(w, h) * 1.4
         const bandH = Math.max(w, h) * 0.32
 
-        for (let i = 0; i < 4; i++) {
-            const offX = (Math.random() - 0.5) * bandW * 0.08
-            const offY = (Math.random() - 0.5) * bandH * 0.4
+        for (let i = 0; i < 3; i++) {
+            const offX = (Math.random() - 0.5) * bandW * 0.06
+            const offY = (Math.random() - 0.5) * bandH * 0.35
             const grad = ctx.createRadialGradient(offX, offY, 0, offX, offY, bandW * 0.5)
-            grad.addColorStop(0, `rgba(255, 253, 240, ${0.045 - i * 0.008})`)
-            grad.addColorStop(0.5, `rgba(220, 215, 255, ${0.022 - i * 0.004})`)
-            grad.addColorStop(1, 'rgba(255, 253, 240, 0)')
+            // Desaturated neutral-white — no warm/lavender tint that reads as fake
+            grad.addColorStop(0, `rgba(240, 242, 248, ${0.016 - i * 0.004})`)
+            grad.addColorStop(0.5, `rgba(230, 232, 240, ${0.008 - i * 0.002})`)
+            grad.addColorStop(1, 'rgba(230, 232, 240, 0)')
             ctx.fillStyle = grad
             ctx.fillRect(-bandW / 2, -bandH / 2, bandW, bandH)
         }
@@ -163,9 +146,9 @@ function drawStaticScene(canvas: HTMLCanvasElement) {
 
     for (const s of stars) {
         if (s.glow) {
-            // soft 2px glow halo around bright stars
-            const halo = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 4)
-            halo.addColorStop(0, hexToRgba(s.color, 0.35))
+            // tight halo — crisp point with minimal bleed
+            const halo = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 2.2)
+            halo.addColorStop(0, hexToRgba(s.color, 0.18))
             halo.addColorStop(1, hexToRgba(s.color, 0))
             ctx.fillStyle = halo
             ctx.beginPath()
@@ -178,14 +161,14 @@ function drawStaticScene(canvas: HTMLCanvasElement) {
         ctx.fill()
     }
 
-    // ── Layer 4 — zodiacal dust haze (subliminal warm horizontal cloud) ──
+    // ── Layer 4 — zodiacal dust haze (very subtle, nearly neutral) ──
     {
         const cx = w * 0.5
         const cy = h * 0.5
         const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(w, h) * 0.6)
-        grad.addColorStop(0, 'rgba(255, 253, 224, 0.045)')
-        grad.addColorStop(0.4, 'rgba(255, 240, 200, 0.025)')
-        grad.addColorStop(1, 'rgba(255, 240, 200, 0)')
+        grad.addColorStop(0, 'rgba(240, 240, 248, 0.010)')
+        grad.addColorStop(0.4, 'rgba(235, 235, 245, 0.005)')
+        grad.addColorStop(1, 'rgba(235, 235, 245, 0)')
         ctx.save()
         ctx.translate(cx, cy)
         ctx.scale(1.6, 0.45)
@@ -207,149 +190,31 @@ function hexToRgba(hex: string, alpha: number): string {
 
 export default function SpaceBackground() {
     const staticRef = useRef<HTMLCanvasElement | null>(null)
-    const animRef = useRef<HTMLCanvasElement | null>(null)
 
     useEffect(() => {
         const staticCanvas = staticRef.current
-        const animCanvas = animRef.current
-        if (!staticCanvas || !animCanvas) return
-
-        // Layer 10/11 state
-        let motes: Mote[] = []
-        let activeRay: CosmicRay | null = null
-        let nextRayAt = performance.now() + 18000 + Math.random() * 30000
-        let raf = 0
-        let mounted = true
+        if (!staticCanvas) return
 
         const resize = () => {
-            // sync sizes from layout
             staticCanvas.style.width = '100%'
             staticCanvas.style.height = '100%'
-            animCanvas.style.width = '100%'
-            animCanvas.style.height = '100%'
-
             drawStaticScene(staticCanvas)
-
-            const dpr = Math.min(window.devicePixelRatio || 1, 2)
-            const w = animCanvas.clientWidth
-            const h = animCanvas.clientHeight
-            animCanvas.width = Math.floor(w * dpr)
-            animCanvas.height = Math.floor(h * dpr)
-            const aCtx = animCanvas.getContext('2d', { alpha: true })
-            if (aCtx) aCtx.setTransform(dpr, 0, 0, dpr, 0, 0)
-
-            // re-seed motes proportionally
-            const targetCount = Math.min(34, Math.max(20, Math.round((w * h) / 80000)))
-            motes = []
-            for (let i = 0; i < targetCount; i++) {
-                const dir = Math.random() * Math.PI * 2
-                const speed = 0.03 + Math.random() * 0.05
-                motes.push({
-                    x: Math.random() * w,
-                    y: Math.random() * h,
-                    vx: Math.cos(dir) * speed,
-                    vy: Math.sin(dir) * speed,
-                    r: 0.3 + Math.random() * 0.3,
-                    aBase: 0.15 + Math.random() * 0.35,
-                    aPhase: Math.random() * Math.PI * 2,
-                    aFreq: 0.0004 + Math.random() * 0.0006,
-                })
-            }
-        }
-
-        const tick = () => {
-            if (!mounted) return
-            const ctx = animCanvas.getContext('2d', { alpha: true })
-            if (!ctx) return
-
-            const w = animCanvas.clientWidth
-            const h = animCanvas.clientHeight
-            ctx.clearRect(0, 0, w, h)
-
-            const now = performance.now()
-
-            // ── Layer 10 — drifting interplanetary dust motes ───────────
-            for (const m of motes) {
-                m.x += m.vx
-                m.y += m.vy
-                if (m.x < -2) m.x = w + 2
-                if (m.x > w + 2) m.x = -2
-                if (m.y < -2) m.y = h + 2
-                if (m.y > h + 2) m.y = -2
-
-                const flicker = 0.5 + 0.5 * Math.sin(now * m.aFreq + m.aPhase)
-                const alpha = m.aBase * (0.55 + 0.45 * flicker)
-
-                ctx.fillStyle = `rgba(225, 235, 255, ${alpha})`
-                ctx.beginPath()
-                ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2)
-                ctx.fill()
-            }
-
-            // ── Layer 11 — cosmic ray flash (one at a time, randomized) ──
-            if (!activeRay && now >= nextRayAt) {
-                activeRay = {
-                    x: Math.random() * w,
-                    y: Math.random() * h,
-                    angle: Math.random() * Math.PI * 2,
-                    length: 8 + Math.random() * 27,
-                    bornAt: now,
-                    duration: 80 + Math.random() * 70,
-                    peakAlpha: 0.55 + Math.random() * 0.15,
-                }
-            }
-
-            if (activeRay) {
-                const t = (now - activeRay.bornAt) / activeRay.duration
-                if (t >= 1) {
-                    activeRay = null
-                    nextRayAt = now + 20000 + Math.random() * 30000
-                } else {
-                    // peak quickly, then fall to zero
-                    const env = t < 0.3 ? t / 0.3 : 1 - (t - 0.3) / 0.7
-                    const a = activeRay.peakAlpha * Math.max(0, env)
-                    const dx = Math.cos(activeRay.angle) * activeRay.length
-                    const dy = Math.sin(activeRay.angle) * activeRay.length
-                    ctx.strokeStyle = `rgba(255, 255, 255, ${a})`
-                    ctx.lineWidth = 1
-                    ctx.lineCap = 'round'
-                    ctx.beginPath()
-                    ctx.moveTo(activeRay.x - dx / 2, activeRay.y - dy / 2)
-                    ctx.lineTo(activeRay.x + dx / 2, activeRay.y + dy / 2)
-                    ctx.stroke()
-                }
-            }
-
-            raf = requestAnimationFrame(tick)
         }
 
         resize()
-        raf = requestAnimationFrame(tick)
 
         const ro = new ResizeObserver(resize)
         ro.observe(staticCanvas)
 
-        return () => {
-            mounted = false
-            cancelAnimationFrame(raf)
-            ro.disconnect()
-        }
+        return () => { ro.disconnect() }
     }, [])
 
     return (
-        <>
-            <canvas
-                ref={staticRef}
-                aria-hidden
-                className="absolute inset-0 w-full h-full"
-                style={{ pointerEvents: 'none', zIndex: 0 }}
-            />
-            <canvas
-                ref={animRef}
-                aria-hidden
-                className="absolute inset-0 w-full h-full"
-                style={{ pointerEvents: 'none', zIndex: 1 }}
-            />
-        </>
+        <canvas
+            ref={staticRef}
+            aria-hidden
+            className="absolute inset-0 w-full h-full"
+            style={{ pointerEvents: 'none', zIndex: 0 }}
+        />
     )
 }

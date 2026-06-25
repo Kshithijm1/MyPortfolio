@@ -61,8 +61,8 @@ function buildShell(count: number, radius: number, seed: number) {
         const s = Math.sqrt(1 - z * z)
         v.set(s * Math.cos(phi), z, s * Math.sin(phi))
 
-        // ~38% of stars squeezed toward the galactic plane → soft dense band
-        if (rng() < 0.38) {
+        // ~22% of stars squeezed toward the galactic plane → subtle suggestion of a band
+        if (rng() < 0.22) {
             const d = v.dot(GALACTIC_NORMAL)
             v.addScaledVector(GALACTIC_NORMAL, -d * (0.78 + rng() * 0.14)).normalize()
         }
@@ -79,7 +79,7 @@ function buildShell(count: number, radius: number, seed: number) {
         colors[i * 3] = cr * brightness
         colors[i * 3 + 1] = cg * brightness
         colors[i * 3 + 2] = cb * brightness
-        sizes[i] = 0.55 + mag * 1.9 + (rng() < 0.025 ? 1.4 : 0)
+        sizes[i] = 0.45 + mag * 1.5 + (rng() < 0.025 ? 0.5 : 0)
     }
     return { positions, colors, sizes }
 }
@@ -93,7 +93,7 @@ void main() {
     vColor = aColor;
     vec4 mv = modelViewMatrix * vec4(position, 1.0);
     gl_PointSize = aSize * uPixelRatio * (140.0 / -mv.z);
-    gl_PointSize = clamp(gl_PointSize, 0.6, 5.5);
+    gl_PointSize = clamp(gl_PointSize, 0.5, 3.2);
     gl_Position = projectionMatrix * mv;
 }
 `
@@ -102,8 +102,8 @@ const starFragment = `
 varying vec3 vColor;
 void main() {
     float d = length(gl_PointCoord - 0.5);
-    // Soft gaussian-ish falloff: tiny bright core, faint halo
-    float core = smoothstep(0.5, 0.04, d);
+    // Tight pinpoint falloff — realistic crisp stars with tiny core, minimal halo
+    float core = smoothstep(0.5, 0.18, d);
     float a = core * core;
     if (a < 0.01) discard;
     gl_FragColor = vec4(vColor, a);
@@ -163,8 +163,7 @@ export default function Starfield({ quality }: { quality: 'high' | 'low' }) {
             <StarShell count={dense ? 1400 : 700} radius={150} seed={101} driftSpeed={0.0006} />
             {/* Mid shell */}
             <StarShell count={dense ? 900 : 450} radius={100} seed={202} driftSpeed={0.0010} />
-            {/* Near shell — sparse, brighter, strongest parallax */}
-            <StarShell count={dense ? 450 : 220} radius={62} seed={303} driftSpeed={0.0016} />
+            {/* Near shell removed — stagnant close stars were distracting */}
         </group>
     )
 }

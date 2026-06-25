@@ -11,51 +11,69 @@ export default function Hero() {
     return (
         <section className="h-screen w-full flex flex-col justify-center items-center relative z-10 pointer-events-none">
 
-            {/* Main Content Area - Auto Height for centering */}
-            <div className="text-center flex flex-col justify-center items-center z-20">
-                <AnimatePresence mode='popLayout'>
+            {/* Soft radial scrim — darkens only the region behind the name/tagline,
+                invisible as a shape, prevents the bright sun washing out the text */}
+            <div
+                aria-hidden
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                    background:
+                        'radial-gradient(ellipse 70% 55% at 50% 46%, rgba(0,0,4,0.65) 0%, rgba(0,0,4,0.32) 45%, transparent 72%)',
+                    zIndex: 0,
+                }}
+            />
+
+            <div className="relative z-10 text-center flex flex-col justify-center items-center gap-8">
+
+                <AnimatePresence mode="popLayout">
                     {!isScrolled && (
-                        <div className="relative z-20 mb-6 flex flex-col items-center">
-                            {/* First Name */}
+                        <div className="flex flex-col items-center gap-2">
+                            {/* First name — large display serif, clean */}
                             <motion.h1
                                 layoutId="hero-name-first"
-                                transition={{ type: "spring", stiffness: 100, damping: 20 }}
-                                initial={{ opacity: 0, y: 20 }}
+                                transition={{ type: 'spring', stiffness: 120, damping: 22 }}
+                                initial={{ opacity: 0, y: 24 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
-                                className="text-6xl md:text-8xl font-light tracking-[-0.04em] leading-none"
+                                exit={{ opacity: 0, y: -10, transition: { duration: 0.18 } }}
+                                className="leading-none font-light text-white/92"
                                 style={{
-                                    fontFamily: 'var(--font-hero), system-ui, sans-serif',
-                                    color: '#9a9a9a',
-                                    textShadow:
-                                        '0 0 14px rgba(0, 0, 0, 0.95), 0 0 38px rgba(0, 0, 0, 0.75), 0 2px 6px rgba(0, 0, 0, 0.85)',
+                                    fontFamily: 'var(--font-display), serif',
+                                    fontSize: 'clamp(3.2rem, 10vw, 7.5rem)',
+                                    letterSpacing: '-0.02em',
+                                    textShadow: '0 2px 16px rgba(0,0,0,0.65)',
                                 }}
                             >
                                 <TextScramble>Kshithij</TextScramble>
                             </motion.h1>
 
-                            {/* Last Name */}
-                            <motion.h1
+                            {/* Last name — small mono, tracked, muted */}
+                            <motion.div
                                 layoutId="hero-name-last"
-                                transition={{ type: "spring", stiffness: 100, damping: 20 }}
-                                initial={{ opacity: 0, y: 20 }}
+                                transition={{ type: 'spring', stiffness: 120, damping: 22 }}
+                                initial={{ opacity: 0, y: 16 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
-                                className="text-4xl md:text-6xl font-light tracking-[-0.03em] mt-1"
+                                exit={{ opacity: 0, y: -6, transition: { duration: 0.18 } }}
+                                className="text-instrument text-white/45"
                                 style={{
-                                    fontFamily: 'var(--font-hero), system-ui, sans-serif',
-                                    color: '#9a9a9a',
-                                    textShadow:
-                                        '0 0 12px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0, 0, 0, 0.7), 0 2px 5px rgba(0, 0, 0, 0.8)',
+                                    fontSize: 'clamp(0.6rem, 1.6vw, 0.88rem)',
+                                    letterSpacing: '0.38em',
+                                    textShadow: '0 1px 8px rgba(0,0,0,0.7)',
                                 }}
                             >
-                                <TextScramble>Malebennur</TextScramble>
-                            </motion.h1>
+                                MALEBENNUR
+                            </motion.div>
                         </div>
                     )}
                 </AnimatePresence>
 
-                <p className="text-xl md:text-2xl text-gray-400 glass-panel inline-block px-6 py-2 rounded-full backdrop-blur-md">
+                {/* Typewriter — plain mono, no glass pill */}
+                <div
+                    className="text-instrument text-[11px] text-white/50"
+                    style={{
+                        letterSpacing: '0.12em',
+                        textShadow: '0 1px 8px rgba(0,0,0,0.8)',
+                    }}
+                >
                     <Typewriter
                         phrases={[
                             'Engineering Student @ UofG',
@@ -66,14 +84,9 @@ export default function Hero() {
                         holdAfterType={1800}
                         holdAfterDelete={320}
                         startDelay={600}
-                        cursorColor="#a0a0a0"
+                        cursorColor="rgba(255,255,255,0.35)"
                     />
-                </p>
-            </div>
-
-            {/* Scroll Indicator */}
-            <div className="absolute bottom-10 animate-bounce text-white/50">
-                ↓ Scroll to Explore
+                </div>
             </div>
         </section>
     )

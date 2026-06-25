@@ -31,8 +31,9 @@ export default function Home() {
         <CanvasContainer />
       </div>
 
-      {/* Scrollable Content - Z-Index 10 */}
-      <div className="relative z-10 pointer-events-none">
+      {/* Scrollable Content — promoted to its own compositor layer so the browser
+          composites two pre-rasterized layers instead of re-painting the canvas region on each scroll frame */}
+      <div className="relative z-10 pointer-events-none" style={{ transform: 'translateZ(0)', willChange: 'transform', isolation: 'isolate' }}>
         <NavBar isHidden={isModalOpen} />
         <div className="pointer-events-auto">
           <section id="hero">
